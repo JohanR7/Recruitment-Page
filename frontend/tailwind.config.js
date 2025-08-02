@@ -14,6 +14,18 @@ export default {
         'primary': '#4e1a7f',
         'secondary': '#e26f9b',
         'accent': '#c3282a',
+        'cyanblue': '#1860ac',
+      },
+      animation: {
+        'marquee-slow': 'marquee 60s linear infinite',
+        'marquee-medium': 'marquee 40s linear infinite',
+        'marquee-fast': 'marquee 20s linear infinite',
+      },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        },
       },
     },
   },

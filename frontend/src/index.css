@@ -5,3 +5,10 @@
 body {
   @apply bg-background text-text;
 }
+
+
+/* Firefox scrollbar styling */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #4e1a7f #f8f2fd; /* thumb and track */
+}
