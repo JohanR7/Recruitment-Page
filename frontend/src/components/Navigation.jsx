@@ -1,10 +1,16 @@
 // src/components/Navigation.jsx
-
+import logo from '../assets/logo/blue.png'
 import React from 'react';
 // Import NavLink instead of just Link to get active styling
 import { NavLink } from 'react-router-dom'; 
 import { Home, Trophy, Target, Bell, User, LogOut } from 'lucide-react';
 
+
+function MyComponent() {
+  return (
+    <img src={logo} alt="Logo" />
+  );
+}
 // No longer needs currentPage or onPageChange
 const Navigation = ({ onLogout, unreadNotifications }) => {
   const navItems = [
@@ -24,10 +30,9 @@ const Navigation = ({ onLogout, unreadNotifications }) => {
   return (
     <nav className="bg-white/80 backdrop-blur-md border-r border-gray-200/80 w-64 min-h-screen p-6 flex flex-col">
       <div className="flex items-center gap-3 mb-10">
-        <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center shadow-md shadow-primary/20">
-          <Target className="w-6 h-6 text-white" />
-        </div>
-        <h1 className="text-xl font-bold text-text">TechRecruit</h1>
+          <img src={logo} alt="Logo" className="w-20 h-auto" />
+        <h1 className="text-xl font-bold  text-cyanblue">Recruitment Portal</h1>
+
       </div>
 
       <div className="flex-grow space-y-2">

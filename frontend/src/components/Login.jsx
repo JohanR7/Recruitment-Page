@@ -1,100 +1,365 @@
-// src/components/Login.jsx
-
 import React, { useState } from 'react';
-import { Target, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, ExternalLink, MessageSquare, X } from 'lucide-react';
+import ImageMarquee from './ImageMarquee';
 
-const Login = ({ onLogin }) => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+import topImage1 from '../assets/acm/1.png';
+import topImage2 from '../assets/acm/2.png';
+import topImage3 from '../assets/acm/3.png';
+import topImage4 from '../assets/acm/4.png';
+import topImage5 from '../assets/acm/5.png';
+import topImage6 from '../assets/acm/6.png';
+import topImage7 from '../assets/acm/7.png';
+import topImage8 from '../assets/acm/8.png';
+import topImage9 from '../assets/acm/9.png';
+import topImage10 from '../assets/acm/10.png';
+import topImage11 from '../assets/acm/11.png';
+import topImage12 from '../assets/acm/12.png';
+import topImage13 from '../assets/acm/13.png';
+import topImage14 from '../assets/acm/14.png';
+import topImage15 from '../assets/acm/15.png';
+import topImage16 from '../assets/acm/16.png';
+import topImage17 from '../assets/acm/17.png';
+import topImage18 from '../assets/acm/18.png';
+import topImage19 from '../assets/acm/19.png';
+import topImage20 from '../assets/acm/20.png';
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // In a real app, you'd perform authentication here
-    onLogin();
+import bottomImage21 from '../assets/alumni/21.png';
+import bottomImage22 from '../assets/alumni/22.avif';
+import bottomImage23 from '../assets/alumni/23.png';
+import bottomImage24 from '../assets/alumni/24.png';
+import bottomImage25 from '../assets/alumni/25.png';
+import bottomImage26 from '../assets/alumni/26.png';
+import bottomImage27 from '../assets/alumni/27.png';
+import bottomImage28 from '../assets/alumni/28.png';
+import bottomImage29 from '../assets/alumni/29.png';
+import bottomImage30 from '../assets/alumni/30.png';
+import bottomImage31 from '../assets/alumni/31.png';
+import bottomImage32 from '../assets/alumni/32.png';
+import bottomImage33 from '../assets/alumni/33.png';
+import bottomImage34 from '../assets/alumni/34.png';
+import bottomImage35 from '../assets/alumni/35.png';
+import bottomImage36 from '../assets/alumni/36.jpg';
+import bottomImage37 from '../assets/alumni/37.png';
+import bottomImage38 from '../assets/alumni/38.avif';
+import bottomImage39 from '../assets/alumni/39.png';
+
+const topImages = [
+  topImage1, topImage2, topImage3, topImage4, topImage5,
+  topImage6, topImage7, topImage8, topImage9, topImage10,
+  topImage11, topImage12, topImage13, topImage14, topImage15,
+  topImage16, topImage17, topImage18, topImage19, topImage20
+];
+
+const bottomImages = [
+  bottomImage21, bottomImage22, bottomImage23, bottomImage24, bottomImage25,
+  bottomImage26, bottomImage27, bottomImage28, bottomImage29, bottomImage30,
+  bottomImage31, bottomImage32, bottomImage33, bottomImage34, bottomImage35,
+  bottomImage36, bottomImage37, bottomImage38, bottomImage39
+];
+
+const SignupModal = ({ isOpen, onClose }) => {
+  const handleDiscordClick = () => {
+    window.open('https://discord.gg/your-server-invite', '_blank');
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Subtle background pattern using the primary color */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%234e1a7f%22 fill-opacity=%220.04%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm-24 0v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 6V2H4v4H0v2h4v4h2V8h4V6H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
-      
-      <div className="bg-white/60 backdrop-blur-xl border border-gray-200/80 rounded-2xl p-8 w-full max-w-md relative shadow-2xl shadow-primary/10">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-2xl pointer-events-none"></div>
-        
-        <div className="relative z-10">
-          <div className="flex items-center justify-center mb-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30">
-              <Target className="w-8 h-8 text-white" />
-            </div>
+    // 1. Added onClick to the overlay to close the modal when clicking outside
+    <div 
+      onClick={onClose} 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+    >
+      {/* 2. Added onClick to stop propagation, preventing the modal from closing when clicking inside it. 
+             Also added 'relative' to position the close button. */}
+      <div 
+        onClick={(e) => e.stopPropagation()} 
+        className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto relative" 
+        style={{ backgroundColor: '#f8f2fd' }}
+      >
+        {/* 3. Added a close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-1 rounded-full text-gray-500 hover:bg-gray-200/80 hover:text-gray-900 transition-all duration-200 z-10"
+          aria-label="Close modal"
+        >
+          <X className="w-6 h-6" />
+        </button>
+
+        {/* Content (no changes here) */}
+        <div className="p-6 pt-12 space-y-6"> {/* Added pt-12 to make space for the close button */}
+          {/* Welcome Message */}
+          <div className="text-center">
+            <h3 className="text-xl font-bold mb-2" style={{ color: '#4e1a7f' }}>
+              Follow these simple steps to get access to our recruitment portal
+            </h3>
           </div>
-          
-          <h1 className="text-3xl font-bold text-text text-center mb-2">Welcome Back</h1>
-          <p className="text-gray-600 text-center mb-8">Sign in to continue your journey</p>
-          
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-white/50 border border-gray-300/80 rounded-lg text-text placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
-                  placeholder="Enter your email"
-                  required
-                />
+
+          {/* Steps Card */}
+          <div className="border-2 rounded-xl p-6" style={{ borderColor: '#e26f9b', backgroundColor: 'rgba(226, 111, 155, 0.05)' }}>
+            <h4 className="text-lg font-bold mb-4 text-center" style={{ color: '#4e1a7f' }}>
+              How to Get Access
+            </h4>
+            
+            <div className="space-y-4">
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#4e1a7f' }}>
+                  1
+                </div>
+                <div>
+                  <h5 className="font-semibold mb-1" style={{ color: '#0e0515' }}>
+                    Join Our Discord Server
+                  </h5>
+                  <p className="text-sm" style={{ color: '#0e0515', opacity: '0.7' }}>
+                    Connect with our vibrant community of developers and get to know the team
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#4e1a7f' }}>
+                  2
+                </div>
+                <div>
+                  <h5 className="font-semibold mb-1" style={{ color: '#0e0515' }}>
+                    Get Your Credentials
+                  </h5>
+                  <p className="text-sm" style={{ color: '#0e0515', opacity: '0.7' }}>
+                    Our team members will provide you with recruitment portal credentials
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#4e1a7f' }}>
+                  3
+                </div>
+                <div>
+                  <h5 className="font-semibold mb-1" style={{ color: '#0e0515' }}>
+                    Access the Portal
+                  </h5>
+                  <p className="text-sm" style={{ color: '#0e0515', opacity: '0.7' }}>
+                    Return here with your credentials and start your journey with us
+                  </p>
+                </div>
               </div>
             </div>
-            
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-12 py-3 bg-white/50 border border-gray-300/80 rounded-lg text-text placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
-                  placeholder="Enter your password"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-text transition-colors duration-200"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-            </div>
-            
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-primary to-secondary text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
-            >
-              Sign In
-            </button>
-          </form>
-          
-          <div className="mt-6 text-center">
-            <a href="#" className="text-sm text-primary hover:text-secondary font-medium transition-colors duration-200">
-              Forgot your password?
-            </a>
           </div>
-          
-          <div className="mt-8 pt-6 border-t border-gray-200/80 text-center">
-            <p className="text-gray-500 text-sm">
-              Don't have an account?{' '}
-              <a href="#" className="font-semibold text-primary hover:text-secondary transition-colors duration-200">
-                Sign up
-              </a>
+
+          {/* Discord Button */}
+          <button
+            onClick={handleDiscordClick}
+            className="w-full py-4 rounded-xl font-semibold hover:opacity-90 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-3 shadow-lg"
+            style={{ backgroundColor: '#5865F2', color: '#ffffff' }}
+          >
+            <MessageSquare className="w-6 h-6" />
+            <span className="text-lg">Join Discord Server</span>
+            <ExternalLink className="w-5 h-5" />
+          </button>
+
+          {/* Footer Note */}
+          <div className="text-center p-4 rounded-lg" style={{ backgroundColor: 'rgba(226, 111, 155, 0.1)' }}>
+            <p className="text-sm" style={{ color: '#4e1a7f' }}>
+              <strong>Note:</strong> This ensures we maintain a quality community and proper onboarding process for all new members.
             </p>
           </div>
         </div>
       </div>
     </div>
+  );
+};
+
+const Login = ({ onLogin }) => {
+  const [showSignupModal, setShowSignupModal] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setTimeout(() => {
+      onLogin();
+    }, 500);
+  };
+
+  return (
+    <>
+      <div className="min-h-screen flex p-8" style={{ backgroundColor: '#f8f2fd' }}>
+        {/* Left Side - Login Form */}
+        <div className="flex-1 flex flex-col justify-center pr-8" style={{ backgroundColor: '#f8f2fd' }}>
+          <div className="w-full max-w-md mx-auto">
+            {/* Welcome Text */}
+            <div className="mb-8">
+              <h1 className="text-4xl font-bold mb-3" style={{ color: '#0e0515' }}>
+                Sup?,<br />Hey, welcome back to ACM recruitment portal
+              </h1>
+            </div>
+
+            {/* Login Form */}
+            <div className="space-y-6">
+              <div>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200"
+                  style={{
+                    backgroundColor: '#f8f2fd',
+                    borderColor: '#e26f9b',
+                    color: '#0e0515',
+                    '--tw-ring-color': '#4e1a7f'
+                  }}
+                  placeholder="chase@gmail.com"
+                />
+              </div>
+
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200"
+                  style={{
+                    backgroundColor: '#f8f2fd',
+                    borderColor: '#e26f9b',
+                    color: '#0e0515',
+                    '--tw-ring-color': '#4e1a7f'
+                  }}
+                  placeholder="••••••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-80 transition-opacity duration-200"
+                  style={{ color: '#e26f9b' }}
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+
+              {/* Remember Me & Forgot Password */}
+              <div className="flex items-center justify-between">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-4 h-4 border rounded focus:ring-2"
+                    style={{
+                      accentColor: '#4e1a7f',
+                      '--tw-ring-color': '#4e1a7f'
+                    }}
+                  />
+                  <span className="ml-2 text-sm" style={{ color: '#0e0515', opacity: '0.8' }}>Remember me</span>
+                </label>
+                <a href="#" className="text-sm hover:opacity-80 transition-opacity duration-200" style={{ color: '#e26f9b' }}>
+                  Forgot Password?
+                </a>
+              </div>
+
+              <button
+                onClick={handleSubmit}
+                className="w-full py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                style={{ backgroundColor: '#4e1a7f', color: '#f8f2fd' }}
+              >
+                Login In
+              </button>
+            </div>
+
+            <div className="mt-8 text-center">
+              <p className="text-sm" style={{ color: '#0e0515', opacity: '0.7' }}>
+                Don't have an account?{' '}
+                <button
+                  onClick={() => setShowSignupModal(true)}
+                  className="font-semibold hover:opacity-80 transition-opacity duration-200"
+                  style={{ color: '#4e1a7f' }}
+                >
+                  Sign Up
+                </button>
+              </p>
+            </div>
+          </div>
+
+          {/* Alumni Section */}
+          <div className="mt-12 w-full max-w-md mx-auto">
+            <div className="text-center mb-4">
+              <h3 className="text-lg font-semibold mb-2" style={{ color: '#4e1a7f' }}>
+                Our Alumni Are At
+              </h3>
+            </div>
+            <div className="h-20 overflow-hidden rounded-lg">
+              <ImageMarquee images={bottomImages} speed="fast" compact={true} />
+            </div>
+          </div>
+        </div>
+        
+        {/* Right Side - Enhanced content */}
+        <div className="flex-1 relative overflow-hidden ml-8 rounded-3xl shadow-2xl" style={{ backgroundColor: '#4e1a7f' }}>
+          {/* Top Section */}
+          <div className="h-1/2 flex flex-col">
+            <div className="p-8 text-center">
+              <h2 className="text-3xl font-bold mb-3" style={{ color: '#f8f2fd' }}>
+                From Syntax to Stacks
+              </h2>
+              <p className="text-lg font-medium mb-2" style={{ color: '#e26f9b' }}>
+                Join us Now!
+              </p>
+              <p className="text-sm opacity-90" style={{ color: '#f8f2fd' }}>
+                Connect with fellow developers and build amazing projects together
+              </p>
+            </div>
+            <div className="flex-1">
+              <ImageMarquee images={topImages} speed="medium" />
+            </div>
+          </div>
+
+          {/* Middle Section - Additional Content */}
+          <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 z-10">
+            <div className="bg-gradient-to-r from-purple-900/80 to-pink-900/80 backdrop-blur-sm mx-8 rounded-2xl p-6 text-center">
+              <h3 className="text-xl font-bold mb-2" style={{ color: '#f8f2fd' }}>
+                Join 50+ Developers
+              </h3>
+              <p className="text-sm opacity-90" style={{ color: '#f8f2fd' }}>
+                Build your network • Learn new skills • Create impact
+              </p>
+            </div>
+          </div>
+
+          {/* Bottom Section */}
+          <div className="h-1/2 flex flex-col justify-end">
+            <div className="p-8 text-center">
+              <h3 className="text-2xl font-bold mb-2" style={{ color: '#f8f2fd' }}>
+                Ready to Code?
+              </h3>
+              <p className="text-base" style={{ color: '#e26f9b' }}>
+                Your journey starts here
+              </p>
+              <div className="flex justify-center space-x-4 mt-4">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#e26f9b' }}></div>
+                  <span className="text-sm" style={{ color: '#f8f2fd', opacity: '0.8' }}>Events</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#e26f9b' }}></div>
+                  <span className="text-sm" style={{ color: '#f8f2fd', opacity: '0.8' }}>Workshops</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#e26f9b' }}></div>
+                  <span className="text-sm" style={{ color: '#f8f2fd', opacity: '0.8' }}>Community</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Signup Modal */}
+      <SignupModal 
+        isOpen={showSignupModal} 
+        onClose={() => setShowSignupModal(false)} 
+      />
+    </>
   );
 };
 
