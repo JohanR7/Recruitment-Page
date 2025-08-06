@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, ExternalLink, MessageSquare, X } from 'lucide-react';
 import ImageMarquee from './ImageMarquee';
+import { useAuth } from '../auth/AuthContext';
+import Logo from '../assets/logo/logo.png';
 
 import topImage1 from '../assets/acm/1.png';
 import topImage2 from '../assets/acm/2.png';
@@ -57,6 +59,12 @@ const bottomImages = [
   bottomImage36, bottomImage37, bottomImage38, bottomImage39
 ];
 
+function MyComponent() {
+  return (
+    <img src={Logo} alt="Logo" />
+  );
+}
+
 const SignupModal = ({ isOpen, onClose }) => {
   const handleDiscordClick = () => {
     window.open('https://discord.gg/your-server-invite', '_blank');
@@ -65,19 +73,15 @@ const SignupModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    // 1. Added onClick to the overlay to close the modal when clicking outside
-    <div 
-      onClick={onClose} 
+    <div
+      onClick={onClose}
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
     >
-      {/* 2. Added onClick to stop propagation, preventing the modal from closing when clicking inside it. 
-             Also added 'relative' to position the close button. */}
-      <div 
-        onClick={(e) => e.stopPropagation()} 
-        className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto relative" 
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto relative"
         style={{ backgroundColor: '#f8f2fd' }}
       >
-        {/* 3. Added a close button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-1 rounded-full text-gray-500 hover:bg-gray-200/80 hover:text-gray-900 transition-all duration-200 z-10"
@@ -86,8 +90,7 @@ const SignupModal = ({ isOpen, onClose }) => {
           <X className="w-6 h-6" />
         </button>
 
-        {/* Content (no changes here) */}
-        <div className="p-6 pt-12 space-y-6"> {/* Added pt-12 to make space for the close button */}
+        <div className="p-6 pt-12 space-y-6"> 
           {/* Welcome Message */}
           <div className="text-center">
             <h3 className="text-xl font-bold mb-2" style={{ color: '#4e1a7f' }}>
@@ -100,7 +103,7 @@ const SignupModal = ({ isOpen, onClose }) => {
             <h4 className="text-lg font-bold mb-4 text-center" style={{ color: '#4e1a7f' }}>
               How to Get Access
             </h4>
-            
+
             <div className="space-y-4">
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#4e1a7f' }}>
@@ -170,17 +173,59 @@ const SignupModal = ({ isOpen, onClose }) => {
 };
 
 const Login = ({ onLogin }) => {
+  const { login } = useAuth(); 
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
+  const [rollno, setRollno] = useState(''); 
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); 
+  const [error, setError] = useState(''); 
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setTimeout(() => {
-      onLogin();
-    }, 500);
+    setError('');
+    setIsLoading(true);
+
+    // Basic validation
+    if (!rollno || !password) {
+      setError('Roll number and password are required');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('https://aseam.acm.org/LMS/roadmaps/auth.php/login', { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          rollno: rollno,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Success - store token and user data
+        login(data.token, data.user);
+
+        // Call the onLogin prop if provided
+        if (onLogin) {
+          onLogin();
+        }
+      } else {
+        // Handle error responses
+        setError(data.error || 'Login failed');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -192,17 +237,28 @@ const Login = ({ onLogin }) => {
             {/* Welcome Text */}
             <div className="mb-8">
               <h1 className="text-4xl font-bold mb-3" style={{ color: '#0e0515' }}>
-                Sup?,<br />Hey, welcome back to ACM recruitment portal
+                Sup?<br />Hey, welcome back to ACM recruitment portal
               </h1>
             </div>
-
             {/* Login Form */}
-            <div className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Error Message */}
+              {error && (
+                <div className="p-3 rounded-lg border" style={{
+                  backgroundColor: '#fee2e2',
+                  borderColor: '#fca5a5',
+                  color: '#dc2626'
+                }}>
+                  {error}
+                </div>
+              )}
+
+              {/* Roll Number Input */}
               <div>
                 <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  value={rollno}
+                  onChange={(e) => setRollno(e.target.value)}
                   className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200"
                   style={{
                     backgroundColor: '#f8f2fd',
@@ -210,10 +266,12 @@ const Login = ({ onLogin }) => {
                     color: '#0e0515',
                     '--tw-ring-color': '#4e1a7f'
                   }}
-                  placeholder="chase@gmail.com"
+                  placeholder="12345"
+                  disabled={isLoading}
                 />
               </div>
 
+              {/* Password Input */}
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -227,12 +285,14 @@ const Login = ({ onLogin }) => {
                     '--tw-ring-color': '#4e1a7f'
                   }}
                   placeholder="••••••••••••"
+                  disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-80 transition-opacity duration-200"
                   style={{ color: '#e26f9b' }}
+                  disabled={isLoading}
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -250,6 +310,7 @@ const Login = ({ onLogin }) => {
                       accentColor: '#4e1a7f',
                       '--tw-ring-color': '#4e1a7f'
                     }}
+                    disabled={isLoading}
                   />
                   <span className="ml-2 text-sm" style={{ color: '#0e0515', opacity: '0.8' }}>Remember me</span>
                 </label>
@@ -258,14 +319,16 @@ const Login = ({ onLogin }) => {
                 </a>
               </div>
 
+              {/* Submit Button */}
               <button
-                onClick={handleSubmit}
-                className="w-full py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 style={{ backgroundColor: '#4e1a7f', color: '#f8f2fd' }}
               >
-                Login In
+                {isLoading ? 'Logging In...' : 'Login In'}
               </button>
-            </div>
+            </form>
 
             <div className="mt-8 text-center">
               <p className="text-sm" style={{ color: '#0e0515', opacity: '0.7' }}>
@@ -293,20 +356,21 @@ const Login = ({ onLogin }) => {
             </div>
           </div>
         </div>
-        
+
         {/* Right Side - Enhanced content */}
-        <div className="flex-1 relative overflow-hidden ml-8 rounded-3xl shadow-2xl" style={{ backgroundColor: '#4e1a7f' }}>
+        <div className="flex-1 relative overflow-hidden ml-8 rounded-3xl shadow-2xl bg-[linear-gradient(to_right,_#4e1a7f,_#e26f9b)]">
+
           {/* Top Section */}
           <div className="h-1/2 flex flex-col">
             <div className="p-8 text-center">
               <h2 className="text-3xl font-bold mb-3" style={{ color: '#f8f2fd' }}>
-                From Syntax to Stacks
+                Fueling Curiosity Igniting Ideas
               </h2>
               <p className="text-lg font-medium mb-2" style={{ color: '#e26f9b' }}>
                 Join us Now!
               </p>
               <p className="text-sm opacity-90" style={{ color: '#f8f2fd' }}>
-                Connect with fellow developers and build amazing projects together
+                Welcome to the realm of ACM, where the boundaries of technology are pushed to the limits. Here, every idea has the potential to bring about change. Together, we are not just adapting to the future; we are actively shaping it, as a FAMILY.
               </p>
             </div>
             <div className="flex-1">
@@ -329,11 +393,13 @@ const Login = ({ onLogin }) => {
           {/* Bottom Section */}
           <div className="h-1/2 flex flex-col justify-end">
             <div className="p-8 text-center">
+              <img src={Logo} alt="Logo" className="w-60 h-auto mx-auto mb-12" />
+
               <h3 className="text-2xl font-bold mb-2" style={{ color: '#f8f2fd' }}>
-                Ready to Code?
+                About us
               </h3>
               <p className="text-base" style={{ color: '#e26f9b' }}>
-                Your journey starts here
+                We are a group of computer science enthusiasts promoting self-education and group-based learning through Student Interest Groups (SIGs) focused on topics such as AI, Cybersecurity, Game Dev, App and Web Development, Blockchain Dev and more.
               </p>
               <div className="flex justify-center space-x-4 mt-4">
                 <div className="flex items-center space-x-2">
@@ -355,9 +421,9 @@ const Login = ({ onLogin }) => {
       </div>
 
       {/* Signup Modal */}
-      <SignupModal 
-        isOpen={showSignupModal} 
-        onClose={() => setShowSignupModal(false)} 
+      <SignupModal
+        isOpen={showSignupModal}
+        onClose={() => setShowSignupModal(false)}
       />
     </>
   );
