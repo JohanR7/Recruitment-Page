@@ -1,10 +1,7 @@
-// src/components/AppLayout.jsx
-
 import React from 'react';
-import { Outlet } from 'react-router-dom'; // Important: Outlet is the placeholder for child routes
+import { Outlet } from 'react-router-dom'; 
 import Navigation from './Navigation';
 
-// Accept props that the Navigation component will need
 const AppLayout = ({ onLogout, unreadNotifications }) => {
   return (
     <div className="min-h-screen bg-background">

@@ -1,11 +1,7 @@
-// src/components/Leaderboard.jsx
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Trophy, Medal, Award, Star, TrendingUp, Crown } from 'lucide-react';
+import { useAuth } from '../auth/AuthContext'; 
 
-// --- Helper Components ---
-
-// A simple loading spinner
 const LoadingSpinner = () => (
   <div className="flex justify-center items-center py-20">
     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -29,220 +25,112 @@ const PlaceholderAvatar = ({ name, rank }) => {
   );
 };
 
-// --- Mock Data ---
-const mockLeaderboardData = [
-  {
-    student_id: 'AM.SC.U4AIE23001',
-    student_name: 'Alex Johnson',
-    total_points: 15420,
-    completed_events: 28
-  },
-  {
-    student_id: 'AM.SC.U4AIE23002',
-    student_name: 'Sarah Williams',
-    total_points: 14850,
-    completed_events: 25
-  },
-  {
-    student_id: 'AM.SC.U4AIE23003',
-    student_name: 'Michael Chen',
-    total_points: 14200,
-    completed_events: 24
-  },
-  {
-    student_id: 'AM.SC.U4AIE23004',
-    student_name: 'Emma Davis',
-    total_points: 13750,
-    completed_events: 22
-  },
-  {
-    student_id: 'AM.SC.U4AIE23015',
-    student_name: 'You (Current User)',
-    total_points: 13500,
-    completed_events: 21
-  },
-  {
-    student_id: 'AM.SC.U4AIE23006',
-    student_name: 'James Wilson',
-    total_points: 13200,
-    completed_events: 20
-  },
-  {
-    student_id: 'AM.SC.U4AIE23007',
-    student_name: 'Olivia Brown',
-    total_points: 12900,
-    completed_events: 19
-  },
-  {
-    student_id: 'AM.SC.U4AIE23008',
-    student_name: 'David Martinez',
-    total_points: 12650,
-    completed_events: 18
-  },
-  {
-    student_id: 'AM.SC.U4AIE23009',
-    student_name: 'Sophia Garcia',
-    total_points: 12400,
-    completed_events: 17
-  },
-  {
-    student_id: 'AM.SC.U4AIE23010',
-    student_name: 'Ryan Anderson',
-    total_points: 12100,
-    completed_events: 16
-  },
-  {
-    student_id: 'AM.SC.U4AIE23011',
-    student_name: 'Ava Thompson',
-    total_points: 11800,
-    completed_events: 15
-  },
-  {
-    student_id: 'AM.SC.U4AIE23012',
-    student_name: 'Noah Rodriguez',
-    total_points: 11500,
-    completed_events: 14
-  },
-  {
-    student_id: 'AM.SC.U4AIE23013',
-    student_name: 'Isabella Lewis',
-    total_points: 11200,
-    completed_events: 13
-  },
-  {
-    student_id: 'AM.SC.U4AIE23014',
-    student_name: 'Liam Walker',
-    total_points: 10950,
-    completed_events: 12
-  },
-  {
-    student_id: 'AM.SC.U4AIE23016',
-    student_name: 'Mia Hall',
-    total_points: 10700,
-    completed_events: 11
-  },
-  {
-    student_id: 'AM.SC.U4AIE23017',
-    student_name: 'Ethan Allen',
-    total_points: 10450,
-    completed_events: 10
-  },
-  {
-    student_id: 'AM.SC.U4AIE23018',
-    student_name: 'Charlotte Young',
-    total_points: 10200,
-    completed_events: 9
-  },
-  {
-    student_id: 'AM.SC.U4AIE23019',
-    student_name: 'Benjamin King',
-    total_points: 9950,
-    completed_events: 8
-  },
-  {
-    student_id: 'AM.SC.U4AIE23020',
-    student_name: 'Amelia Wright',
-    total_points: 9700,
-    completed_events: 7
-  },
-  {
-    student_id: 'AM.SC.U4AIE23021',
-    student_name: 'Lucas Lopez',
-    total_points: 9450,
-    completed_events: 6
-  },
-  {
-    student_id: 'AM.SC.U4AIE23022',
-    student_name: 'Harper Hill',
-    total_points: 9200,
-    completed_events: 5
-  },
-  {
-    student_id: 'AM.SC.U4AIE23023',
-    student_name: 'Mason Scott',
-    total_points: 8950,
-    completed_events: 4
-  }
-];
-
-// --- Main Leaderboard Component ---
 
 const Leaderboard = () => {
+  const { auth } = useAuth(); 
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [userId, setUserId] = useState('');
-  const itemsPerPage = 10;
-  // const API_BASE = 'https://aseam.acm.org/LMS/roadmaps/roadmap.php'; // <-- COMMENTED OUT FOR TESTING
+  
+  const API_BASE = 'https://aseam.acm.org/LMS/roadmaps/roadmap1.php';
 
-  // Get user ID from localStorage or set default
-  useEffect(() => {
-    // const storedUserId = localStorage.getItem('userId') || 'AM.SC.U4AIE23015'; // <-- COMMENTED OUT FOR TESTING
-    const storedUserId = 'AM.SC.U4AIE23015'; // <-- MOCK USER ID
-    setUserId(storedUserId);
-  }, []);
+  // Get current user info from auth context
+  const currentUser = auth?.user;
+  const currentUserId = currentUser?.id || currentUser?.student_id || currentUser?.user_id;
+  const currentUserName = currentUser?.name || currentUser?.student_name || currentUser?.username;
 
-  // --- COMMENTED OUT API Logic ---
-  /*
-  const fetchLeaderboard = async (currentPage = 1) => {
+  // Debug logging for auth info
+  console.log('🔐 Auth Context Data:', auth);
+  console.log('👤 Current User:', currentUser);
+  console.log('🆔 Current User ID:', currentUserId);
+  console.log('📝 Current User Name:', currentUserName);
+
+  // API helper function with auth token
+  const apiCall = useCallback(async (url, options = {}) => {
     setLoading(true);
+    setError('');
+    
+    const requestOptions = { 
+      ...options,
+      headers: {
+        ...options.headers,
+        ...(auth?.token && { 'Authorization': `Bearer ${auth.token}` }),
+      }
+    };
+    
+    if (!(options.body instanceof FormData)) {
+      requestOptions.headers['Content-Type'] = 'application/json';
+    }
+    
     try {
-      // NOTE: This assumes omitting `roadmap_id` fetches the global leaderboard.
-      // Adjust the URL if your API behaves differently.
-      const response = await fetch(`${API_BASE}/roadmap/event/leaderboard?page=${currentPage}`);
-      const data = await response.json();
+      console.log('🌐 Making API request to:', url);
+      console.log('🔑 Using auth token:', auth?.token ? 'Present' : 'Not present');
+      
+      const response = await fetch(url, requestOptions);
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || `Request failed with status ${response.status}`);
+      }
+      return await response.json();
+    } catch (err) {
+      console.error('API Error:', err);
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [auth?.token]);
+
+  // Fetch leaderboard with API integration and logging
+  const fetchLeaderboard = useCallback(async (currentPage = 1) => {
+    try {
+      console.log(`🚀 Fetching leaderboard - Page: ${currentPage}`);
+      const data = await apiCall(`${API_BASE}/leaderboard?page=${currentPage}&limit=10`);
+      
+      console.log('📊 Leaderboard API Response:', JSON.stringify(data, null, 2));
+      
       if (data.success) {
+        console.log('✅ Leaderboard fetch successful');
+        console.log('📋 Leaderboard data:', data.leaderboard);
+        console.log('📄 Pagination info:', data.pagination);
+        
         setLeaderboardData(data.leaderboard);
-        setPage(data.page);
-        setTotalPages(data.total_pages);
+        setPage(data.pagination.current_page);
+        setTotalPages(data.pagination.total_pages);
       } else {
-        setLeaderboardData([]); // Clear data on failure
+        console.warn('⚠️ Leaderboard API returned success: false');
+        setLeaderboardData([]);
       }
     } catch (error) {
-      console.error('Error fetching leaderboard:', error);
+      console.error('❌ Error fetching leaderboard:', error);
       setLeaderboardData([]);
     }
-    setLoading(false);
-  };
-  */
-
-  // --- Mock Data Logic ---
-  const fetchLeaderboard = async (currentPage = 1) => {
-    setLoading(true);
-    
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    try {
-      // Mock pagination logic
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const paginatedData = mockLeaderboardData.slice(startIndex, endIndex);
-      
-      setLeaderboardData(paginatedData);
-      setPage(currentPage);
-      setTotalPages(Math.ceil(mockLeaderboardData.length / itemsPerPage));
-    } catch (error) {
-      console.error('Error with mock data:', error);
-      setLeaderboardData([]);
-    }
-    
-    setLoading(false);
-  };
+  }, [apiCall]);
 
   // Initial fetch when the component mounts
   useEffect(() => {
     fetchLeaderboard(1);
-  }, []);
+  }, [fetchLeaderboard]);
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
+      console.log(`📄 Changing to page: ${newPage}`);
       fetchLeaderboard(newPage);
     }
   };
 
-  // --- Helper Functions for UI ---
+  // Helper function to check if a user is the current user
+  const isCurrentUser = (user) => {
+    if (!currentUserId) return false;
+    
+    // Check multiple possible ID fields
+    return user.student_id?.toString() === currentUserId?.toString() ||
+           user.id?.toString() === currentUserId?.toString() ||
+           user.user_id?.toString() === currentUserId?.toString();
+  };
+
   const getRankIcon = (rank) => {
     if (rank === 1) return <Trophy className="w-6 h-6 text-purple-700" />;
     if (rank === 2) return <Medal className="w-6 h-6 text-pink-500" />;
@@ -257,16 +145,51 @@ const Leaderboard = () => {
     return 'bg-gray-200 text-gray-700';
   };
 
-  const topThree = mockLeaderboardData.slice(0, 3);
+  // Get top 3 from current leaderboard data
+  const topThree = leaderboardData.slice(0, 3);
+
+  // Find current user in leaderboard
+  const currentUserInLeaderboard = leaderboardData.find(user => isCurrentUser(user));
+
+  // Debug logging for render
+  console.log('🎯 Rendering Leaderboard Component');
+  console.log('Current leaderboard state:', leaderboardData);
+  console.log('Current page:', page);
+  console.log('Total pages:', totalPages);
+  console.log('Current user in leaderboard:', currentUserInLeaderboard);
 
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Hall of Fame</h1>
-          <p className="text-gray-600">See how you rank against other recruits</p>
+          <p className="text-gray-600">
+            {currentUserName ? `Welcome back, ${currentUserName}! ` : ''}
+            See how you rank against other recruits
+          </p>
+          {currentUserInLeaderboard && (
+            <div className="mt-2 text-sm text-purple-600 font-medium">
+              🎯 Your current rank: #{currentUserInLeaderboard.rank_position} with {currentUserInLeaderboard.total_points.toLocaleString()} points
+            </div>
+          )}
         </div>
+        <button 
+          onClick={() => {
+            console.log('🔄 Refresh button clicked');
+            fetchLeaderboard(page);
+          }}
+          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+        >
+          <Trophy size={16} />
+          Refresh
+        </button>
       </div>
+
+      {error && (
+        <div className="p-4 bg-red-500/20 text-red-300 border border-red-500 rounded-lg mb-6">
+          Error: {error}
+        </div>
+      )}
 
       {loading && leaderboardData.length === 0 ? (
         <LoadingSpinner />
@@ -278,18 +201,51 @@ const Leaderboard = () => {
         </div>
       ) : (
         <>
-          {/* Top 3 Podium */}
-          <div className="mb-8">
-            <div className="grid grid-cols-3 gap-4 max-w-4xl mx-auto">
-              {/* 2nd Place */}
-              {topThree.length > 1 && (
-                <div className="flex flex-col items-center order-1 mt-4 group cursor-pointer transform transition-all duration-500 hover:scale-105 hover:-translate-y-2">
+          {/* Current User Highlight Card - Show if not in top 3 and not on first page */}
+          {currentUserInLeaderboard && currentUserInLeaderboard.rank_position > 3 && page > 1 && (
+            <div className="mb-6 bg-gradient-to-r from-purple-100/80 to-purple-200/80 border-2 border-purple-300 rounded-xl p-4">
+              <h3 className="text-sm font-semibold text-purple-700 mb-2">Your Position</h3>
+              <div className="flex items-center gap-4">
+                <div className="flex-shrink-0">{getRankIcon(currentUserInLeaderboard.rank_position)}</div>
+                <div className="flex-shrink-0 w-12 h-12">
+                  <PlaceholderAvatar name={currentUserInLeaderboard.student_name} rank={currentUserInLeaderboard.rank_position} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-semibold text-purple-800 truncate">
+                    {currentUserInLeaderboard.student_name}
+                  </h4>
+                  <p className="text-purple-600 text-sm">{currentUserInLeaderboard.completed_events} quests completed</p>
+                </div>
+                <div className="flex items-center gap-2 text-right">
+                  <div className="flex items-center gap-1 text-purple-700">
+                    <Star className="w-4 h-4" />
+                    <span className="font-bold">{currentUserInLeaderboard.total_points.toLocaleString()}</span>
+                  </div>
+                  <div className="px-3 py-1 rounded-full text-sm font-semibold bg-purple-600 text-white">
+                    #{currentUserInLeaderboard.rank_position}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Top 3 Podium - Only show if we have enough data */}
+          {topThree.length >= 3 && (
+            <div className="mb-8">
+              <div className="grid grid-cols-3 gap-4 max-w-4xl mx-auto">
+                {/* 2nd Place */}
+                <div className={`flex flex-col items-center order-1 mt-4 group cursor-pointer transform transition-all duration-500 hover:scale-105 hover:-translate-y-2 ${isCurrentUser(topThree[1]) ? 'ring-2 ring-purple-400 ring-offset-2' : ''}`}>
                   <div className="relative bg-white/70 backdrop-blur-lg border border-pink-300/60 rounded-2xl p-6 w-full text-center 
                                   hover:shadow-2xl hover:shadow-pink-500/20 
                                   hover:bg-gradient-to-br hover:from-pink-50 hover:to-pink-100/80 hover:border-pink-400/80
                                   before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-r before:from-pink-400/20 before:to-pink-500/20 
                                   before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500">
                     <div className="relative z-10">
+                      {isCurrentUser(topThree[1]) && (
+                        <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-purple-600 text-white text-xs px-2 py-1 rounded-full font-bold">
+                          YOU
+                        </div>
+                      )}
                       <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-br from-pink-500 to-pink-700 rounded-full 
                                       flex items-center justify-center shadow-lg transform transition-all duration-300 
                                       group-hover:scale-110 group-hover:rotate-12">
@@ -317,10 +273,9 @@ const Leaderboard = () => {
                                     transition-transform duration-1000 delay-200"></div>
                   </div>
                 </div>
-              )}
-              {/* 1st Place */}
-              {topThree.length > 0 && (
-                <div className="flex flex-col items-center order-2 group cursor-pointer transform transition-all duration-500 hover:scale-110 hover:-translate-y-3">
+
+                {/* 1st Place */}
+                <div className={`flex flex-col items-center order-2 group cursor-pointer transform transition-all duration-500 hover:scale-110 hover:-translate-y-3 ${isCurrentUser(topThree[0]) ? 'ring-2 ring-purple-400 ring-offset-2' : ''}`}>
                   <div className="relative bg-gradient-to-br from-purple-50/80 to-purple-100/80 backdrop-blur-lg 
                                   border border-purple-300/60 rounded-2xl p-6 w-full text-center 
                                   hover:shadow-2xl hover:shadow-purple-500/30 
@@ -330,13 +285,16 @@ const Leaderboard = () => {
                                   after:absolute after:inset-0 after:rounded-2xl after:shadow-inner after:shadow-purple-300/50 
                                   after:opacity-0 hover:after:opacity-100 after:transition-opacity after:duration-500">
                     <div className="relative z-10">
+                      {isCurrentUser(topThree[0]) && (
+                        <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-purple-600 text-white text-xs px-2 py-1 rounded-full font-bold">
+                          YOU
+                        </div>
+                      )}
                       <div className="absolute -top-4 -right-4 w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-800 rounded-full 
                                       flex items-center justify-center shadow-xl transform transition-all duration-300 
                                       group-hover:scale-125 group-hover:rotate-45 group-hover:shadow-purple-500/50">
                         <Crown className="w-5 h-5 text-white" />
                       </div>
-                      <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-transparent via-purple-400 to-transparent 
-                                      opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200"></div>
                       <div className="relative mb-4 w-24 h-24 mx-auto transform transition-all duration-300 group-hover:scale-125">
                         <div className="absolute inset-0 bg-gradient-to-r from-purple-400/40 to-purple-600/40 rounded-full blur-xl 
                                         opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
@@ -349,8 +307,6 @@ const Leaderboard = () => {
                         <Star className="w-5 h-5 transition-transform duration-300 group-hover:rotate-180 group-hover:scale-125" />
                         <span className="font-bold text-lg">{topThree[0].total_points.toLocaleString()}</span>
                       </div>
-                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-400/0 via-purple-400/10 to-purple-400/0 
-                                      opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
                     </div>
                   </div>
                   <div className="w-full h-20 bg-gradient-to-t from-purple-700/80 to-purple-600/60 rounded-b-lg -mt-2 
@@ -359,15 +315,11 @@ const Leaderboard = () => {
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent 
                                     transform -skew-x-12 -translate-x-full group-hover:translate-x-full 
                                     transition-transform duration-1000 delay-300"></div>
-                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-purple-300 
-                                    opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-400"></div>
                   </div>
                 </div>
-              )}
-                            {/* 3rd Place */}
-              {topThree.length > 2 && (
-                <div className="flex flex-col items-center order-3 mt-4 group cursor-pointer transform transition-all duration-500 hover:scale-105 hover:-translate-y-2">
-                  {/* Main Card */}
+
+                {/* 3rd Place */}
+                <div className={`flex flex-col items-center order-3 mt-4 group cursor-pointer transform transition-all duration-500 hover:scale-105 hover:-translate-y-2 ${isCurrentUser(topThree[2]) ? 'ring-2 ring-purple-400 ring-offset-2' : ''}`}>
                   <div className="relative bg-white/70 backdrop-blur-lg border border-red-300/60 rounded-2xl p-6 w-full text-center 
                                   group-hover:shadow-2xl group-hover:shadow-red-500/20 
                                   group-hover:bg-gradient-to-br group-hover:from-red-50/80 group-hover:to-red-100/80 group-hover:border-red-400/80
@@ -375,6 +327,11 @@ const Leaderboard = () => {
                                   before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-r before:from-red-400/20 before:to-red-500/20 
                                   before:opacity-0 group-hover:before:opacity-100 before:transition-opacity before:duration-500">
                     <div className="relative z-10">
+                      {isCurrentUser(topThree[2]) && (
+                        <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-purple-600 text-white text-xs px-2 py-1 rounded-full font-bold">
+                          YOU
+                        </div>
+                      )}
                       <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-br from-red-600 to-red-800 rounded-full 
                                       flex items-center justify-center shadow-lg transform transition-all duration-300 
                                       group-hover:scale-110 group-hover:rotate-12">
@@ -394,7 +351,6 @@ const Leaderboard = () => {
                       </div>
                     </div>
                   </div>
-                  {/* Card Base */}
                   <div className="w-full h-16 bg-gradient-to-t from-red-600/80 to-red-500/60 rounded-b-lg -mt-2 
                                   transform transition-all duration-500 group-hover:from-red-700/90 group-hover:to-red-600/70 
                                   group-hover:shadow-lg relative overflow-hidden">
@@ -403,42 +359,44 @@ const Leaderboard = () => {
                                     transition-transform duration-1000 delay-200"></div>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
-          </div>
+          )}
           
           {/* Full Leaderboard List */}
           <div className="bg-white/60 backdrop-blur-md border border-gray-200/80 rounded-2xl overflow-hidden">
             <div className="divide-y divide-gray-200/80">
-              {leaderboardData.map((user, index) => {
-                 const rank = (page - 1) * itemsPerPage + index + 1;
-                 return (
-                   <div key={user.student_id} className={`p-4 md:p-6 hover:bg-purple-50/50 transition-all duration-200 ${user.student_id === userId ? 'bg-purple-100/70 border-l-4 border-purple-700' : ''}`}>
-                     <div className="flex items-center gap-4">
-                       <div className="flex-shrink-0">{getRankIcon(rank)}</div>
-                       <div className="flex-shrink-0 w-12 h-12">
-                         <PlaceholderAvatar name={user.student_name} rank={rank} />
-                       </div>
-                       <div className="flex-1 min-w-0">
-                         <h3 className={`font-semibold truncate ${user.student_id === userId ? 'text-purple-700' : 'text-gray-800'}`}>
-                           {user.student_name}
-                         </h3>
-                         <p className="text-gray-500 text-sm">{user.completed_events} quests completed</p>
-                       </div>
-                       <div className="flex items-center gap-2 md:gap-6 text-right">
-                         <div className="hidden md:block">
-                           <div className="flex items-center gap-1 text-pink-600">
-                             <Star className="w-4 h-4" />
-                             <span className="font-bold">{user.total_points.toLocaleString()}</span>
-                           </div>
-                         </div>
-                         <div className={`px-3 py-1 rounded-full text-sm font-semibold ${getRankBadge(rank)}`}>
-                           #{rank}
-                         </div>
-                       </div>
-                     </div>
-                   </div>
-                 );
+              {leaderboardData.map((user) => {
+                const isCurrent = isCurrentUser(user);
+                console.log('👤 Rendering player:', user, 'Is current user:', isCurrent);
+                
+                return (
+                  <div key={user.student_id} className={`p-4 md:p-6 hover:bg-purple-50/50 transition-all duration-200 ${isCurrent ? 'bg-purple-100/70 border-l-4 border-purple-700' : ''}`}>
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0">{getRankIcon(user.rank_position)}</div>
+                      <div className="flex-shrink-0 w-12 h-12">
+                        <PlaceholderAvatar name={user.student_name} rank={user.rank_position} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className={`font-semibold truncate ${isCurrent ? 'text-purple-700' : 'text-gray-800'}`}>
+                          {user.student_name} {isCurrent && <span className="text-xs bg-purple-600 text-white px-2 py-1 rounded-full ml-2">YOU</span>}
+                        </h3>
+                        <p className="text-gray-500 text-sm">{user.completed_events} quests completed</p>
+                      </div>
+                      <div className="flex items-center gap-2 md:gap-6 text-right">
+                        <div className="hidden md:block">
+                          <div className="flex items-center gap-1 text-pink-600">
+                            <Star className="w-4 h-4" />
+                            <span className="font-bold">{user.total_points.toLocaleString()}</span>
+                          </div>
+                        </div>
+                        <div className={`px-3 py-1 rounded-full text-sm font-semibold ${getRankBadge(user.rank_position)}`}>
+                          #{user.rank_position}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
               })}
             </div>
           </div>
@@ -447,16 +405,22 @@ const Leaderboard = () => {
           {totalPages > 1 && (
             <div className="flex justify-center items-center mt-6 gap-4">
               <button 
-                onClick={() => handlePageChange(page - 1)} 
-                disabled={page === 1} 
+                onClick={() => {
+                  console.log('⬅️ Previous page clicked, current page:', page);
+                  handlePageChange(page - 1);
+                }} 
+                disabled={page === 1 || loading} 
                 className="px-6 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
               >
                 Previous
               </button>
               <span className="text-gray-600 font-medium px-4">Page {page} of {totalPages}</span>
               <button 
-                onClick={() => handlePageChange(page + 1)} 
-                disabled={page === totalPages} 
+                onClick={() => {
+                  console.log('➡️ Next page clicked, current page:', page);
+                  handlePageChange(page + 1);
+                }} 
+                disabled={page === totalPages || loading} 
                 className="px-6 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
               >
                 Next

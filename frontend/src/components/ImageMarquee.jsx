@@ -1,4 +1,3 @@
-// src/components/ImageMarquee.jsx
 import React from 'react';
 
 const ImageMarquee = ({ images, speed = 'medium', compact = false }) => {
@@ -16,11 +15,8 @@ const ImageMarquee = ({ images, speed = 'medium', compact = false }) => {
   const secondsPerImage = speedFactors[speed] || speedFactors.medium;
   const animationDuration = `${images.length * secondsPerImage}s`;
 
-  // --- THE FIX ---
-  // We explicitly define the width in `rem` to match the arbitrary value in the className.
-  // 17 * 0.25rem = 4.25rem.
-  const itemWidth = compact ? 4.25 : 20; // Use 4.25rem for compact, which is w-17 equivalent.
-  const marginRight = compact ? 0.5 : 1;  // 0.5rem (mr-2) vs 1rem (mr-4)
+  const itemWidth = compact ? 4.25 : 20;
+  const marginRight = compact ? 0.5 : 1;  
   const totalWidthOfOneItem = itemWidth + marginRight;
   
   const marqueeStyle = {
@@ -44,7 +40,6 @@ const ImageMarquee = ({ images, speed = 'medium', compact = false }) => {
           compact ? (
             <div
               key={index}
-              // Use the arbitrary value `w-[4.25rem]` to create the w-17 equivalent.
               className="h-12 w-[4.25rem] flex-shrink-0 mr-2 rounded-md shadow-md p-1 bg-white/20 flex items-center justify-center"
             >
               <img
@@ -52,7 +47,7 @@ const ImageMarquee = ({ images, speed = 'medium', compact = false }) => {
                 alt={`Alumni logo ${index + 1}`}
                 className="max-h-full max-w-full object-contain"
                 onError={(e) => {
-                  e.target.src = `https://via.placeholder.com/68x48/8B5CF6/FFFFFF?text=Logo`; // 68px is ~4.25rem
+                  e.target.src = `https://via.placeholder.com/68x48/8B5CF6/FFFFFF?text=Logo`;
                 }}
               />
             </div>

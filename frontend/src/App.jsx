@@ -1,9 +1,8 @@
-// src/App.jsx
-
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
-// Import your new Layout and page components
+import { AuthProvider, useAuth } from './auth/AuthContext'; 
+
 import AppLayout from './components/AppLayout';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
@@ -13,60 +12,56 @@ import Notifications from './components/Notifications';
 import Profile from './components/Profile';
 import { notifications } from './data/mockData';
 
-function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+function AppRoutes() {
+  const { auth, logout } = useAuth();
   const unreadNotifications = notifications.filter(n => !n.read).length;
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    // No need to set currentPage anymore, router handles it.
-  };
-
   return (
-    <Router>
-      <Routes>
-        {/* Public Login Route */}
-        {/* If the user is already logged in, redirect them from /login to the dashboard */}
-        <Route
-          path="/login"
-          element={isLoggedIn ? <Navigate to="/dashboard" /> : <Login onLogin={handleLogin} />}
-        />
+    <Routes>
+      {/* Public Login Route */}
+      <Route
+        path="/login"
+        element={auth ? <Navigate to="/dashboard" /> : <Login />}
+      />
 
-        {/* Protected Application Routes */}
-        {/* If the user is logged in, show the AppLayout and its nested routes. */}
-        {/* Otherwise, redirect them to the /login page. */}
-        <Route
-          path="/"
-          element={
-            isLoggedIn ? (
-              <AppLayout
-                onLogout={handleLogout}
-                unreadNotifications={unreadNotifications}
-              />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        >
-          {/* Default child route for "/" */}
-          <Route index element={<Navigate to="/dashboard" />} /> 
-          
-          {/* Nested routes that will render inside AppLayout's <Outlet> */}
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="challenges" element={<Challenges />} />
-          <Route path="leaderboard" element={<Leaderboard />} />
-          <Route path="notifications" element={<Notifications />} />
-          <Route path="profile" element={<Profile />} />
-        </Route>
+      {/* Protected Application Routes */}
+      <Route
+        path="/"
+        element={
+          auth ? (
+            <AppLayout
+              onLogout={logout}
+              unreadNotifications={unreadNotifications}
+            />
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
+      >
+        {/* Default child route for "/" */}
+        <Route index element={<Navigate to="/dashboard" />} /> 
+        
+        {/* Nested routes that will render inside AppLayout's <Outlet> */}
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="challenges" element={<Challenges />} />
+        <Route path="leaderboard" element={<Leaderboard />} />
+        <Route path="notifications" element={<Notifications />} />
+        <Route path="profile" element={<Profile />} />
+      </Route>
 
-        {/* Optional: A catch-all route to redirect any unknown paths */}
-        <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
-      </Routes>
-    </Router>
+      {/* Catch-all route */}
+      <Route path="*" element={<Navigate to={auth ? "/dashboard" : "/login"} />} />
+    </Routes>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider> 
+      <Router>
+        <AppRoutes />
+      </Router>
+    </AuthProvider>
   );
 }
 
