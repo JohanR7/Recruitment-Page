@@ -104,19 +104,19 @@ const ChallengeCard = ({ challenge, progress, onClick, isCenter = false }) => {
   
   return (
     <>
-    <div className="absolute left-10 max-w-[42%]">
+    < motion.div className="absolute left-10 w-[35%]" initial={{ opacity: 0,y:500,scale:0 }} animate={{ opacity: 1,y:0,scale:1 }} transition={{ duration: 0.7 }}>
       <h3 style={{ color: '#4e1a7f' }} className={`text-4xl font-bold mb-3 transition-colors duration-300 ${isCenter ? '' : 'hidden'}`}>
         {challenge.title}
       </h3>
-      <p style={{ color: '#0e0515' }} className={`text-sm leading-relaxed transition-colors duration-300 ${isCenter ? '' : ''}`}>
+      <p style={{ color: '#0e0515' }} className={`text-lg leading-relaxed mt-4 transition-colors duration-300 ${isCenter ? '' : 'hidden'}`}>
         {challenge.description}
       </p>
-    </div>
+    </motion.div>
     <div 
       className={`relative transition-all duration-500 cursor-pointer ${
         isCenter 
           ? 'transform scale-110 z-10' 
-          : 'transform scale-[80%] opacity-70 hover:opacity-90'
+          : 'transform scale-[80%] opacity-60 hover:opacity-80'
       }`}
       onClick={onClick}
     >
@@ -227,7 +227,7 @@ const Challenges = () => {
   const [userId, setUserId] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isNext,setIsNext] = useState(false);
-  const API_BASE = 'https://aseam.acm.org/LMS/roadmaps/roadmap.php';
+  const API_BASE = 'https://aseam.acm.org/LMS/roadmaps/roadmap1.php';
 
   // Get user ID from localStorage or set a default one for testing
   useEffect(() => {
@@ -595,19 +595,19 @@ const Challenges = () => {
 
         {/* Carousel */}
         {challenges.length > 0 && (
-          <div className="relative max-w-8xl mx-auto">
+          <div className="relative max-w-8xl mx-auto mr-36">
             {/* Navigation Buttons */}
             <button 
               onClick={prevSlide}
               style={{ background: '#4e1a7f', color: '#f8f2fd', borderColor: '#4e1a7f' }}
-              className="absolute right-72 top-[97%] transform -translate-y-1/2 z-20 w-12 h-12 border rounded-full flex items-center justify-center hover:opacity-90 transition-all duration-300 shadow-lg"
+              className="absolute right-[25%] top-[97%] transform -translate-y-1/2 z-20 w-12 h-12 border rounded-full flex items-center justify-center hover:opacity-90 transition-all duration-300 shadow-lg"
             >
               <ChevronLeft style={{ color: '#f8f2fd' }} className="w-6 h-6" />
             </button>
             <button 
               onClick={nextSlide}
               style={{ background: '#4e1a7f', color: '#f8f2fd', borderColor: '#4e1a7f' }}
-              className="absolute right-52 top-[97%] transform -translate-y-1/2 z-20 w-12 h-12 border rounded-full flex items-center justify-center hover:opacity-90 transition-all duration-300 shadow-lg"
+              className="absolute right-[18%] top-[97%] transform -translate-y-1/2 z-20 w-12 h-12 border rounded-full flex items-center justify-center hover:opacity-90 transition-all duration-300 shadow-lg"
             >
               <ChevronRight style={{ color: '#f8f2fd' }} className="w-6 h-6" />
             </button>
@@ -618,28 +618,36 @@ const Challenges = () => {
                 const index = (currentIndex + offset + challenges.length) % challenges.length;
                 const challenge = challenges[index];
                 const progress = userProgress[challenge?.id];
-                
+                const getInitial = (isNext,isCenter,isRight) => {
+                  if (isNext) {
+                    return isCenter
+                      ? { x: -400, opacity: 1, scale: 0.5 }
+                      : (isRight?{ x: -400, opacity: 1, scale: 1.35 }:{ x: -100, opacity: 0, scale: 1 });
+                  } else {
+                    return isCenter
+                      ? { x: 400, opacity: 1, scale: 0.5 }
+                      : (isRight?{ x: 100, opacity: 0, scale: 1 }:{ x: 400, opacity: 1, scale: 1.35 });
+                  }
+                };
+
                 return challenge ? (
                   <>
-                  <div key={`${challenge.id}-${offset}`} className={`flex-shrink-0 w-80 
-                  ${isNext 
-                    ? 'initial={{ opacity: -10, scale: 0.8, x=0 }} animate={{ opacity: 1, scale: 1, x=0 }} transition={{ duration: 2}}' 
-                    : 'initial={{ opacity: 10, scale: 0.8, x=0 }} animate={{ opacity: 1, scale: 1, x=0 }} transition={{ duration: 2}}' 
-                    }`}>
+                  <motion.div key={`${challenge.id}-${offset}`} className={`flex-shrink-0 w-80 `}
+                   initial={getInitial(isNext,offset===0,offset===1)} animate={{ opacity: 1, scale: 1, x:0 }} transition={{ duration: 0.2, ease: 'easeInOut' }}>
                     <ChallengeCard
                       challenge={challenge}
                       progress={progress}
                       onClick={() => fetchChallenge(challenge.id)}
                       isCenter={offset === 0}
                     />
-                  </div>
+                  </motion.div>
                   </>
                 ) : null;
               })}
             </div>
 
             {/* Dots Indicator */}
-            <div className="absolute top-0 z-10 flex justify-center justify-around space-x-5 w-full md-4 ">
+            <div className="absolute top-0 z-10 flex justify-center justify-around w-full ml-20 md-4 ">
               {challenges.map((_, index) => (
                 <button
                   key={index}
