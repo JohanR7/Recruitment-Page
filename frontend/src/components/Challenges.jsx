@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  ArrowLeft, Star, Clock, CheckCircle, Circle, Zap, Target, Upload, X, Shield, Play, AlertCircle, ChevronLeft, ChevronRight 
+import {
+  ArrowLeft, Star, Clock, CheckCircle, Circle, Zap, Target, Upload, X, Shield, Play, AlertCircle, ChevronLeft, ChevronRight
 } from 'lucide-react';
-import {motion} from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+
 // --- Helper Components ---
 
 // Loading Overlay for API calls
@@ -99,119 +100,197 @@ const SubmissionModal = ({ event, onClose, onSubmit }) => {
 };
 
 // Carousel Challenge Card
-const ChallengeCard = ({ challenge, progress, onClick, isCenter = false }) => {
+const ChallengeCard = ({ challenge, progress, onClick, isCenter = false, cardIndex, currentIndex, totalCards }) => {
   const progressPercentage = progress ? Math.round((progress.completed_events / progress.total_events) * 100) : 0;
-  
+
+  // Calculate position offset from center
+  const offset = cardIndex - currentIndex;
+
+  // Handle click - if center card, proceed to roadmap; if side card, rotate to center
+  const handleCardClick = () => {
+    if (isCenter) {
+      // Center card clicked - proceed to challenge details
+      onClick(challenge.id, true); // Pass true to indicate this should open the roadmap
+    } else {
+      // Side card clicked - rotate to center
+      onClick(challenge.id, false); // Pass false to indicate this should just rotate to center
+    }
+  };
+
   return (
     <>
-    < motion.div className="absolute left-10 w-[35%]" initial={{ opacity: 0,y:500,scale:0 }} animate={{ opacity: 1,y:0,scale:1 }} transition={{ duration: 0.7 }}>
-      <h3 style={{ color: '#4e1a7f' }} className={`text-4xl font-bold mb-3 transition-colors duration-300 ${isCenter ? '' : 'hidden'}`}>
-        {challenge.title}
-      </h3>
-      <p style={{ color: '#0e0515' }} className={`text-lg leading-relaxed mt-4 transition-colors duration-300 ${isCenter ? '' : 'hidden'}`}>
-        {challenge.description}
-      </p>
-    </motion.div>
-    <div 
-      className={`relative transition-all duration-500 cursor-pointer ${
-        isCenter 
-          ? 'transform scale-110 z-10' 
-          : 'transform scale-[80%] opacity-60 hover:opacity-80'
-      }`}
-      onClick={onClick}
-    >
-      <div
-        style={{
-          border: `2px solid #e26f9b`,
-          borderRadius: '1.5rem',
-          background: isCenter ? 'linear-gradient(135deg, #f8f2fd 90%, #e26f9b 10%)' : '#f8f2fd'
-        }}
-        className={`
-          relative overflow-hidden transition-all duration-500
-          ${isCenter 
-            ? 'shadow-2xl'
-            : 'shadow-lg hover:shadow-xl'
-          }
-        `}>
-        {/* Floating icon/symbol */}
-        <div
-          className={`absolute top-4 w-72 h-48 rounded-2xl flex items-center justify-self-center justify-center transition-all duration-500 ${
-            isCenter ? 'bg-white/20 backdrop-blur-md' : 'bg-white/10'
-          }`}
-        >
-          <div
-            style={{ background: isCenter ? '#e26f9b' : '#4e1a7f' }}
-            className={`w-60 h-36 rounded-xl flex items-center justify-center shadow-lg`}
+      {/* Description text - only show for center card */}
+      <AnimatePresence mode="wait">
+        {isCenter && (
+          <motion.div
+            key="description"
+            className="absolute left-10 w-[35%]"
+            initial={{ opacity: 0, y: 50, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -50, scale: 0.8 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
           >
-            <Star style={{ color: '#f8f2fd' }} className="w-5 h-5" />
-          </div>
-        </div>
-
-        {/* Main content */}
-        <div className="p-4 pt-64">
-          <div className="mb-4">
-            <h3 style={{ color: '#4e1a7f' }} className="text-lg font-bold mb-3 transition-colors duration-300">
+            <h3 style={{ color: '#4e1a7f' }} className="text-4xl font-bold mb-3">
               {challenge.title}
             </h3>
-          </div>
-
-          {/* Progress Section */}
-          <div className="mb-4">
-            <div className="flex justify-between items-center mb-3">
-              <span style={{ color: '#0e0515' }} className="text-sm font-medium">
-                Progress
-              </span>
-              <span style={{ color: '#4e1a7f' }} className="text-sm font-bold">
-                {progressPercentage}%
-              </span>
-            </div>
-            <div style={{ background: '#e26f9b' }} className="relative w-full h-2 rounded-full overflow-hidden">
-              <div
-                style={{ background: '#4e1a7f', width: `${progressPercentage}%` }}
-                className="absolute left-0 top-0 h-full rounded-full transition-all duration-1000 ease-out"
-              />
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <div style={{ background: '#e26f9b' }} className="w-8 h-8 rounded-lg flex items-center justify-center">
-                <Star style={{ color: '#f8f2fd' }} className="w-4 h-4" />
-              </div>
-              <span style={{ color: '#0e0515' }} className="text-sm font-semibold">
-                {progress?.total_points || '...'} pts
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div style={{ background: '#4e1a7f' }} className="w-8 h-8 rounded-lg flex items-center justify-center">
-                <Clock style={{ color: '#f8f2fd' }} className="w-4 h-4" />
-              </div>
-              <span style={{ color: '#0e0515' }} className="text-sm font-semibold">
-                {progress?.total_events || '...'} tasks
-              </span>
-            </div>
-          </div>
-
-          {/* Call to action for center card */}
-          {isCenter && (
-            <div className="mt-4 pt-4 border-t" style={{ borderColor: '#e26f9b' }}>
-              <button style={{ background: '#4e1a7f', color: '#f8f2fd' }} className="w-full py-3 px-4 rounded-xl font-semibold hover:opacity-90 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg animate-pulse">
-                Start Journey
-                <ChevronRight style={{ color: '#e26f9b' }} className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Reward badge */}
-        {isCenter && (
-          <div style={{ background: '#e26f9b', color: '#f8f2fd' }} className="absolute top-56 left-4 px-3 py-1 rounded-full text-xs font-bold shadow-lg animate-bounce">
-            GET REWARD
-          </div>
+            <p style={{ color: '#0e0515' }} className="text-lg leading-relaxed mt-4">
+              {challenge.description}
+            </p>
+          </motion.div>
         )}
-      </div>
-    </div>
+      </AnimatePresence>
+
+      {/* Card */}
+      <motion.div
+        layout
+        className={`relative cursor-pointer ${isCenter ? 'z-10' : 'z-0'
+          }`}
+        onClick={handleCardClick}
+        animate={{
+          scale: isCenter ? 1.1 : 0.8,
+          opacity: isCenter ? 1 : 0.6,
+        }}
+        whileHover={{
+          scale: isCenter ? 1.15 : 0.85,
+          opacity: isCenter ? 1 : 0.8,
+        }}
+        transition={{
+          duration: 0.5,
+          ease: "easeInOut",
+          layout: { duration: 0.5 }
+        }}
+      >
+        <div
+          style={{
+            border: `2px solid #e26f9b`,
+            borderRadius: '1.5rem',
+            background: isCenter ? 'linear-gradient(135deg, #f8f2fd 90%, #e26f9b 10%)' : '#f8f2fd'
+          }}
+          className={`
+            relative overflow-hidden transition-all duration-500
+            ${isCenter
+              ? 'shadow-2xl'
+              : 'shadow-lg hover:shadow-xl'
+            }
+          `}>
+          {/* Floating icon/symbol */}
+          <div
+            className={`absolute top-4 w-72 h-48 rounded-2xl mt-4 ml-2 transition-all duration-500 ${isCenter ? 'bg-white/20 backdrop-blur-md' : 'bg-white/10'
+              }`}
+          >
+            <div
+              style={{ background: isCenter ? '#e26f9b' : '#4e1a7f' }}
+              className={`w-60 h-36 rounded-xl flex items-center justify-center ml-7 shadow-lg`}
+            >
+              <Star style={{ color: '#f8f2fd' }} className="w-5 h-5" />
+            </div>
+          </div>
+
+          {/* Main content */}
+          <div className="p-4 pt-64">
+            <div className="mb-4">
+              <h3 style={{ color: '#4e1a7f' }} className="text-lg font-bold mb-3 transition-colors duration-300">
+                {challenge.title}
+              </h3>
+            </div>
+
+            {/* Progress Section */}
+            <div className="mb-4">
+              <div className="flex justify-between items-center mb-3">
+                <span style={{ color: '#0e0515' }} className="text-sm font-medium">
+                  Progress
+                </span>
+                <span style={{ color: '#4e1a7f' }} className="text-sm font-bold">
+                  {progressPercentage}%
+                </span>
+              </div>
+              <div style={{ background: '#e26f9b' }} className="relative w-full h-2 rounded-full overflow-hidden">
+                <motion.div
+                  style={{ background: '#4e1a7f' }}
+                  className="absolute left-0 top-0 h-full rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progressPercentage}%` }}
+                  transition={{ duration: 1, ease: "easeOut", delay: isCenter ? 0.2 : 0 }}
+                />
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div style={{ background: '#e26f9b' }} className="w-8 h-8 rounded-lg flex items-center justify-center">
+                  <Star style={{ color: '#f8f2fd' }} className="w-4 h-4" />
+                </div>
+                <span style={{ color: '#0e0515' }} className="text-sm font-semibold">
+                  {progress?.total_points || '...'} pts
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div style={{ background: '#4e1a7f' }} className="w-8 h-8 rounded-lg flex items-center justify-center">
+                  <Clock style={{ color: '#f8f2fd' }} className="w-4 h-4" />
+                </div>
+                <span style={{ color: '#0e0515' }} className="text-sm font-semibold">
+                  {progress?.total_events || '...'} tasks
+                </span>
+              </div>
+            </div>
+
+            {/* Call to action for center card */}
+            <AnimatePresence>
+              {isCenter && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3, delay: 0.2 }}
+                  className="mt-4 pt-4 border-t"
+                  style={{ borderColor: '#e26f9b' }}
+                >
+                  <motion.button
+                    style={{ background: '#4e1a7f', color: '#f8f2fd' }}
+                    className="w-full py-3 px-4 rounded-xl font-semibold hover:opacity-90 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    animate={{
+                      boxShadow: ["0 4px 6px rgba(78, 26, 127, 0.3)", "0 8px 15px rgba(78, 26, 127, 0.4)", "0 4px 6px rgba(78, 26, 127, 0.3)"]
+                    }}
+                    transition={{
+                      boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                    }}
+                  >
+                    Start Journey
+                    <ChevronRight style={{ color: '#e26f9b' }} className="w-4 h-4" />
+                  </motion.button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Reward badge */}
+          <AnimatePresence>
+            {isCenter && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  rotate: 0,
+                  y: [0, -5, 0]
+                }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                transition={{
+                  duration: 0.5,
+                  y: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                }}
+                style={{ background: '#e26f9b', color: '#f8f2fd' }}
+                className="absolute top-56 left-4 px-3 py-1 rounded-full text-xs font-bold shadow-lg"
+              >
+                GET REWARD
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
     </>
   );
 };
@@ -226,7 +305,7 @@ const Challenges = () => {
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isNext,setIsNext] = useState(false);
+
   const API_BASE = 'https://aseam.acm.org/LMS/roadmaps/roadmap1.php';
 
   // Get user ID from localStorage or set a default one for testing
@@ -313,7 +392,7 @@ const Challenges = () => {
     }
     setLoading(false);
   };
-  
+
   // Load initial data on component mount
   useEffect(() => {
     fetchChallenges();
@@ -322,12 +401,24 @@ const Challenges = () => {
   // Carousel navigation
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % challenges.length);
-    setIsNext(true);
   };
 
   const prevSlide = () => {
     setCurrentIndex((prev) => (prev - 1 + challenges.length) % challenges.length);
-    setIsNext(false);
+  };
+
+  // Handle card click - either rotate to center or open roadmap
+  const handleCardClick = (challengeId, shouldOpenRoadmap) => {
+    if (shouldOpenRoadmap) {
+      // Center card clicked - open the roadmap
+      fetchChallenge(challengeId);
+    } else {
+      // Side card clicked - rotate it to center
+      const challengeIndex = challenges.findIndex(c => c.id === challengeId);
+      if (challengeIndex !== -1) {
+        setCurrentIndex(challengeIndex);
+      }
+    }
   };
 
   // Helper Functions
@@ -335,7 +426,7 @@ const Challenges = () => {
     if (!progress || !progress.total_events) return 0;
     return Math.round((progress.completed_events / progress.total_events) * 100);
   };
-  
+
   const getStatusConfig = (event) => {
     const configs = {
       green: { bg: 'bg-green-500/10', text: 'text-green-600', icon: CheckCircle, border: 'border-green-500/20' },
@@ -357,7 +448,7 @@ const Challenges = () => {
     const progress = userProgress[selectedChallenge.id];
     const completedTasks = progress?.completed_events || 0;
     const totalTasks = progress?.total_points || selectedChallenge.subChallenges?.length || 0;
-    
+
     return (
       <div style={{ background: '#f8f2fd', color: '#0e0515' }} className="min-h-screen relative overflow-hidden">
         {/* Background decorative elements */}
@@ -365,7 +456,7 @@ const Challenges = () => {
           <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-3xl"></div>
-          
+
           {/* Floating circles */}
           {[...Array(15)].map((_, i) => (
             <div
@@ -384,8 +475,8 @@ const Challenges = () => {
         <div className="relative z-10 p-8">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
-            <button 
-              onClick={() => setSelectedChallenge(null)} 
+            <button
+              onClick={() => setSelectedChallenge(null)}
               style={{ color: '#4e1a7f', borderColor: '#4e1a7f', background: '#f8f2fd' }}
               className="flex items-center gap-2 transition-colors border px-4 py-2 rounded-lg"
             >
@@ -401,7 +492,7 @@ const Challenges = () => {
             <p style={{ color: '#0e0515' }} className="text-lg max-w-3xl mx-auto mb-8">
               {selectedChallenge.description}
             </p>
-            
+
             {/* Countdown/Progress Display */}
             <div className="text-center mb-8">
               <p style={{ color: '#4e1a7f' }} className="text-lg mb-4 font-semibold">Challenge Progress:</p>
@@ -432,8 +523,8 @@ const Challenges = () => {
           {/* Timeline */}
           <div className="max-w-6xl mx-auto relative">
             {/* Central Timeline Line */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-gradient-to-b from-pink-500 via-purple-500 to-blue-500 opacity-60" 
-                 style={{ height: `${selectedChallenge.subChallenges.length * 300 + 100}px` }}>
+            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-gradient-to-b from-pink-500 via-purple-500 to-blue-500 opacity-60"
+              style={{ height: `${selectedChallenge.subChallenges.length * 300 + 100}px` }}>
             </div>
 
             {/* Timeline Items */}
@@ -442,32 +533,33 @@ const Challenges = () => {
                 const statusConfig = getStatusConfig(quest);
                 const isLeft = index % 2 === 0;
                 const StatusIcon = statusConfig.icon;
-                
+
                 return (
                   <div key={quest.id} className="relative">
                     {/* Timeline Dot */}
                     <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-2 z-20">
-                      <div className={`w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-lg ${
-                        quest.status_color === 'green' ? 'bg-green-500' :
-                        quest.status_color === 'yellow' ? 'bg-yellow-500' :
-                        quest.status_color === 'red' ? 'bg-red-500' :
-                        quest.status_color === 'blue' ? 'bg-blue-500' :
-                        'bg-gray-400'
-                      }`}>
+                      <motion.div className={`w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-lg ${quest.status_color === 'green' ? 'bg-green-500' :
+                          quest.status_color === 'yellow' ? 'bg-yellow-500' :
+                            quest.status_color === 'red' ? 'bg-red-500' :
+                              quest.status_color === 'blue' ? 'bg-blue-500' :
+                                'bg-gray-400'
+                        }`}
+                        initial={{ opacity: 0, y:20, scale: 0.5}} whileInView={{opacity:1, y:0, scale:1}} transition={{ duration: 1, ease: 'easeInOut' }} viewport={{ amount: 0.7 }}>
                         <StatusIcon className="w-6 h-6 text-white" />
-                      </div>
+                      </motion.div>
                     </div>
 
                     {/* Timeline Date */}
                     <div className="absolute left-1/2 transform -translate-x-1/2 top-16 z-10">
-                      <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg px-3 py-1">
+                      <motion.div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg px-3 py-1"
+                        initial={{ opacity: 0, y:-40, scale: 0.5}} whileInView={{opacity:1, y:0, scale:1}} transition={{ duration: 2, ease: 'easeInOut' }} viewport={{ amount: 0.7 }}>
                         <span
                           className="text-sm font-medium"
                           style={{ color: '#e26f9b' }}
                         >
                           Quest {index + 1}
                         </span>
-                      </div>
+                      </motion.div>
                     </div>
 
                     {/* Content Card */}
@@ -486,27 +578,29 @@ const Challenges = () => {
                             </div>
                           </div>
                         )}
-                        
-                        <div
+
+                        <motion.div
                           style={{
                             border: '2px solid #e26f9b',
                             borderRadius: '1rem',
                             background: '#f8f2fd'
                           }}
                           className="bg-white/90 backdrop-blur-md p-6 shadow-xl border border-white/20"
-                        >
+                          initial={isLeft ? ({ opacity: 0, x: 300 }):({opacity:0, x:-300})} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 1.5, ease: 'easeInOut' }}
+                          viewport={{amount: 0.7 }}
+                          >
                           {/* Duration Badge */}
                           {quest.time_remaining && (
                             <div className="inline-block bg-gradient-to-r from-blue-500 to-purple-500 text-white px-3 py-1 rounded-full text-sm font-semibold mb-4">
-                              {quest.time_remaining > 86400 ? `${Math.ceil(quest.time_remaining / 86400)} Days` : 
-                               quest.time_remaining > 3600 ? `${Math.ceil(quest.time_remaining / 3600)} Hours` :
-                               `${Math.ceil(quest.time_remaining / 60)} Minutes`}
+                              {quest.time_remaining > 86400 ? `${Math.ceil(quest.time_remaining / 86400)} Days` :
+                                quest.time_remaining > 3600 ? `${Math.ceil(quest.time_remaining / 3600)} Hours` :
+                                  `${Math.ceil(quest.time_remaining / 60)} Minutes`}
                             </div>
                           )}
-                          
+
                           <h3 className="text-xl font-bold text-gray-800 mb-3">{quest.title}</h3>
                           <p className="text-gray-600 text-sm mb-4 leading-relaxed">{quest.description}</p>
-                          
+
                           {/* Status and Points */}
                           <div className="flex items-center justify-between mb-4">
                             <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text}`}>
@@ -520,7 +614,7 @@ const Challenges = () => {
 
                           {/* Action Button */}
                           {quest.can_submit && (
-                            <button 
+                            <button
                               onClick={() => setSubmissions({ ...submissions, [quest.id]: true })}
                               className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
                             >
@@ -528,13 +622,13 @@ const Challenges = () => {
                               {quest.submission_status === 'rejected' ? 'Resubmit Quest' : 'Start Quest'}
                             </button>
                           )}
-                          
+
                           <div className="mt-3 text-right">
                             <button className="text-pink-500 hover:text-pink-600 text-sm font-medium transition-colors">
                               LEARN MORE
                             </button>
                           </div>
-                        </div>
+                        </motion.div>
                       </div>
                     </div>
                   </div>
@@ -597,66 +691,66 @@ const Challenges = () => {
         {challenges.length > 0 && (
           <div className="relative max-w-8xl mx-auto mr-36">
             {/* Navigation Buttons */}
-            <button 
+            <motion.button
               onClick={prevSlide}
               style={{ background: '#4e1a7f', color: '#f8f2fd', borderColor: '#4e1a7f' }}
-              className="absolute right-[25%] top-[97%] transform -translate-y-1/2 z-20 w-12 h-12 border rounded-full flex items-center justify-center hover:opacity-90 transition-all duration-300 shadow-lg"
+              className="fixed right-[32%] bottom-16 z-20 w-12 h-12 border rounded-full flex items-center justify-center hover:opacity-90 transition-all duration-300 shadow-lg"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
             >
               <ChevronLeft style={{ color: '#f8f2fd' }} className="w-6 h-6" />
-            </button>
-            <button 
+            </motion.button>
+            <motion.button
               onClick={nextSlide}
               style={{ background: '#4e1a7f', color: '#f8f2fd', borderColor: '#4e1a7f' }}
-              className="absolute right-[18%] top-[97%] transform -translate-y-1/2 z-20 w-12 h-12 border rounded-full flex items-center justify-center hover:opacity-90 transition-all duration-300 shadow-lg"
+              className="fixed right-[20%] bottom-16 z-20 w-12 h-12 border rounded-full flex items-center justify-center hover:opacity-90 transition-all duration-300 shadow-lg"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
             >
               <ChevronRight style={{ color: '#f8f2fd' }} className="w-6 h-6" />
-            </button>
+            </motion.button>
 
             {/* Carousel Container */}
-            <div className="flex items-center justify-center gap-2 px-20 py-24 max-w-xl -traslate-x-[50%] justify-self-end transition-transform duration-500 ease-in-out">
+            <div className="flex items-center justify-center gap-2 px-20 py-24 max-w-xl justify-self-end">
               {[-1, 0, 1].map((offset) => {
                 const index = (currentIndex + offset + challenges.length) % challenges.length;
                 const challenge = challenges[index];
                 const progress = userProgress[challenge?.id];
-                const getInitial = (isNext,isCenter,isRight) => {
-                  if (isNext) {
-                    return isCenter
-                      ? { x: -400, opacity: 1, scale: 0.5 }
-                      : (isRight?{ x: -400, opacity: 1, scale: 1.35 }:{ x: -100, opacity: 0, scale: 1 });
-                  } else {
-                    return isCenter
-                      ? { x: 400, opacity: 1, scale: 0.5 }
-                      : (isRight?{ x: 100, opacity: 0, scale: 1 }:{ x: 400, opacity: 1, scale: 1.35 });
-                  }
-                };
 
                 return challenge ? (
-                  <>
-                  <motion.div key={`${challenge.id}-${offset}`} className={`flex-shrink-0 w-80 `}
-                   initial={getInitial(isNext,offset===0,offset===1)} animate={{ opacity: 1, scale: 1, x:0 }} transition={{ duration: 0.2, ease: 'easeInOut' }}>
+                  <div key={`${challenge.id}-${index}`} className="flex-shrink-0 w-80">
                     <ChallengeCard
                       challenge={challenge}
                       progress={progress}
-                      onClick={() => fetchChallenge(challenge.id)}
+                      onClick={handleCardClick}
                       isCenter={offset === 0}
+                      cardIndex={index}
+                      currentIndex={currentIndex}
+                      totalCards={challenges.length}
                     />
-                  </motion.div>
-                  </>
+                  </div>
                 ) : null;
               })}
             </div>
 
             {/* Dots Indicator */}
-            <div className="absolute top-0 z-10 flex justify-center justify-around w-full ml-20 md-4 ">
+            <div className="absolute top-0 z-10 flex justify-center justify-around w-full ml-20 md-4">
               {challenges.map((_, index) => (
-                <button
+                <motion.button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
                   style={{
                     background: index === currentIndex ? '#e26f9b' : '#4e1a7f',
-                    boxShadow: index === currentIndex ? '0 0 8px #e26f9b' : 'none'
                   }}
-                  className={`w-3 h-3 rounded-full transition-all duration-300`}
+                  className="w-3 h-3 rounded-full transition-all duration-300"
+                  animate={{
+                    scale: index === currentIndex ? 1.4 : 1,
+                    boxShadow: index === currentIndex
+                      ? '0 0 8px #e26f9b'
+                      : '0 0 0px transparent'
+                  }}
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.3 }}
                 />
               ))}
             </div>
@@ -665,6 +759,13 @@ const Challenges = () => {
 
         {loading && <LoadingOverlay />}
       </div>
+
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+      `}</style>
     </div>
   );
 };
