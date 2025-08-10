@@ -1,7 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
-import { AuthProvider, useAuth } from './auth/AuthContext'; 
+import { AuthProvider, useAuth } from './contexts/AuthContext'; 
+import { ThemeProvider } from './contexts/ThemeContext.jsx';
 
 import AppLayout from './components/AppLayout';
 import Login from './components/Login';
@@ -57,11 +58,17 @@ function AppRoutes() {
 
 function App() {
   return (
-    <AuthProvider> 
-      <Router>
-        <AppRoutes />
-      </Router>
-    </AuthProvider>
+    // 1. Nest all your providers at the top level.
+    // The order usually doesn't matter unless one provider depends on another.
+    <ThemeProvider>
+      <AuthProvider>
+        {/* 2. Use BrowserRouter for web projects. It's common to alias it as Router. */}
+        <Router>
+          {/* 3. Your routes component remains inside. */}
+          <AppRoutes />
+        </Router>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
