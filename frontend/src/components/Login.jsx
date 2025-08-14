@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, ExternalLink, MessageSquare, X } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import ImageMarquee from './ImageMarquee';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import Logo from '../assets/logo/logo.png';
+import { Instagram, Linkedin, Github, Globe } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 
 import topImage1 from '../assets/acm/1.png';
 import topImage2 from '../assets/acm/2.png';
@@ -17,9 +19,9 @@ import topImage9 from '../assets/acm/9.png';
 import topImage10 from '../assets/acm/10.png';
 import topImage11 from '../assets/acm/11.png';
 import topImage12 from '../assets/acm/12.png';
-import topImage13 from '../assets/acm/13.png';
-import topImage14 from '../assets/acm/14.png';
-import topImage15 from '../assets/acm/15.png';
+import topImage13 from '../assets/acm/13.jpg';
+import topImage14 from '../assets/acm/14.jpg';
+import topImage15 from '../assets/acm/15.jpg';
 import topImage16 from '../assets/acm/16.png';
 import topImage17 from '../assets/acm/17.png';
 import topImage18 from '../assets/acm/18.png';
@@ -41,8 +43,8 @@ import bottomImage32 from '../assets/alumni/32.png';
 import bottomImage33 from '../assets/alumni/33.png';
 import bottomImage34 from '../assets/alumni/34.png';
 import bottomImage35 from '../assets/alumni/35.png';
-import bottomImage36 from '../assets/alumni/36.jpg';
-import bottomImage37 from '../assets/alumni/37.png';
+import bottomImage36 from '../assets/alumni/36.png';
+import bottomImage37 from '../assets/alumni/37.svg';
 import bottomImage38 from '../assets/alumni/38.avif';
 import bottomImage39 from '../assets/alumni/39.png';
 
@@ -66,145 +68,70 @@ function MyComponent() {
   );
 }
 
-const SignupModal = ({ isOpen, onClose }) => {
-  const { theme } = useTheme();
-  
-  const handleDiscordClick = () => {
-    window.open('https://discord.gg/your-server-invite', '_blank');
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div
-      onClick={onClose}
-      className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4 transition-colors duration-300"
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="bg-background dark:bg-dark-background rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto relative border border-gray-200/50 dark:border-gray-700/50 shadow-2xl transition-colors duration-300"
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-1 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200/80 dark:hover:bg-gray-800/80 hover:text-gray-900 dark:hover:text-gray-100 transition-all duration-200 z-10"
-          aria-label="Close modal"
-        >
-          <X className="w-6 h-6" />
-        </button>
-
-        <div className="p-6 pt-12 space-y-6"> 
-          {/* Welcome Message */}
-          <div className="text-center">
-            <h3 className="text-xl font-bold mb-2 text-primary dark:text-dark-primary">
-              Follow these simple steps to get access to our recruitment portal
-            </h3>
-          </div>
-
-          {/* Steps Card */}
-          <div className="border-2 border-secondary/30 dark:border-dark-secondary/30 rounded-xl p-6 bg-secondary/5 dark:bg-dark-secondary/5">
-            <h4 className="text-lg font-bold mb-4 text-center text-primary dark:text-dark-primary">
-              How to Get Access
-            </h4>
-
-            <div className="space-y-4">
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-8 h-8 bg-primary dark:bg-dark-primary rounded-full flex items-center justify-center text-sm font-bold text-white">
-                  1
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-1 text-text dark:text-dark-text">
-                    Join Our Discord Server
-                  </h5>
-                  <p className="text-sm text-text/70 dark:text-dark-text/70">
-                    Connect with our vibrant community of developers and get to know the team
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-8 h-8 bg-primary dark:bg-dark-primary rounded-full flex items-center justify-center text-sm font-bold text-white">
-                  2
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-1 text-text dark:text-dark-text">
-                    Get Your Credentials
-                  </h5>
-                  <p className="text-sm text-text/70 dark:text-dark-text/70">
-                    Our team members will provide you with recruitment portal credentials
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-8 h-8 bg-primary dark:bg-dark-primary rounded-full flex items-center justify-center text-sm font-bold text-white">
-                  3
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-1 text-text dark:text-dark-text">
-                    Access the Portal
-                  </h5>
-                  <p className="text-sm text-text/70 dark:text-dark-text/70">
-                    Return here with your credentials and start your journey with us
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Discord Button */}
-          <button
-            onClick={handleDiscordClick}
-            className="w-full py-4 rounded-xl font-semibold hover:opacity-90 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-3 shadow-lg bg-[#5865F2] text-white"
-          >
-            <MessageSquare className="w-6 h-6" />
-            <span className="text-lg">Join Discord Server</span>
-            <ExternalLink className="w-5 h-5" />
-          </button>
-
-          {/* Footer Note */}
-          <div className="text-center p-4 rounded-lg bg-secondary/10 dark:bg-dark-secondary/10">
-            <p className="text-sm text-primary dark:text-dark-primary">
-              <strong>Note:</strong> This ensures we maintain a quality community and proper onboarding process for all new members.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const Login = ({ onLogin }) => {
-  const { login } = useAuth(); 
+  const { login } = useAuth();
   const { theme } = useTheme();
-  const [showSignupModal, setShowSignupModal] = useState(false);
+  const [formType, setFormType] = useState('login'); // 'login', 'signup', 'forgot'
   const [showPassword, setShowPassword] = useState(false);
-  const [rollno, setRollno] = useState(''); 
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); 
-  const [error, setError] = useState(''); 
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [resetToken, setResetToken] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
-  const handleSubmit = async (e) => {
+  // Login form state
+  const [loginData, setLoginData] = useState({
+    rollno: '',
+    password: '',
+    rememberMe: false
+  });
+
+  // Signup form state
+  const [signupData, setSignupData] = useState({
+    rollno: '',
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+
+  // Forgot password form state
+  const [forgotData, setForgotData] = useState({
+    email: ''
+  });
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    if (token) {
+      setResetToken(token);
+      setFormType('reset');
+    }
+  }, []);
+
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
     // Basic validation
-    if (!rollno || !password) {
+    if (!loginData.rollno || !loginData.password) {
       setError('Roll number and password are required');
       setIsLoading(false);
       return;
     }
 
     try {
-      const response = await fetch('https://aseam.acm.org/LMS/roadmaps/auth.php/login', { 
+      const response = await fetch('https://aseam.acm.org/LMS/roadmaps/auth.php/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          rollno: rollno,
-          password: password,
+          rollno: loginData.rollno,
+          password: loginData.password,
         }),
       });
 
@@ -213,6 +140,7 @@ const Login = ({ onLogin }) => {
       if (response.ok) {
         // Success - store token and user data
         login(data.token, data.user);
+        console.log(data.user);
 
         // Call the onLogin prop if provided
         if (onLogin) {
@@ -230,98 +158,458 @@ const Login = ({ onLogin }) => {
     }
   };
 
-  return (
-    <>
-      <div className="min-h-screen flex p-8 bg-background dark:bg-dark-background transition-colors duration-300">
-        {/* Left Side - Login Form */}
-        <div className="flex-1 flex flex-col justify-center pr-8">
-          <div className="w-full max-w-md mx-auto">
-            {/* Welcome Text */}
-            <div className="mb-8">
-              <h1 className="text-4xl font-bold mb-3 text-text dark:text-dark-text">
-                Sup?<br />Hey, welcome back to ACM recruitment portal
-              </h1>
-            </div>
-            {/* Login Form */}
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Error Message */}
-              {error && (
-                <div className="p-3 rounded-lg border bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800/50 text-red-700 dark:text-red-300">
-                  {error}
-                </div>
-              )}
+  const handleSignupSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccessMessage('');
+    setIsLoading(true);
 
-              {/* Roll Number Input */}
-              <div>
-                <input
-                  type="text"
-                  value={rollno}
-                  onChange={(e) => setRollno(e.target.value)}
-                  className="w-full px-4 py-3 border border-secondary/50 dark:border-dark-secondary/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:focus:ring-dark-primary/50 focus:border-transparent transition-all duration-200 bg-background dark:bg-dark-background text-text dark:text-dark-text placeholder-text/50 dark:placeholder-dark-text/50"
-                  placeholder="12345"
-                  disabled={isLoading}
-                />
-              </div>
+    // Basic validation
+    if (!signupData.rollno || !signupData.name || !signupData.email || !signupData.password || !signupData.confirmPassword) {
+      setError('All fields are required');
+      setIsLoading(false);
+      return;
+    }
 
-              {/* Password Input */}
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-secondary/50 dark:border-dark-secondary/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:focus:ring-dark-primary/50 focus:border-transparent transition-all duration-200 bg-background dark:bg-dark-background text-text dark:text-dark-text placeholder-text/50 dark:placeholder-dark-text/50"
-                  placeholder="••••••••••••"
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-80 transition-opacity duration-200 text-secondary dark:text-dark-secondary"
-                  disabled={isLoading}
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
+    if (signupData.password !== signupData.confirmPassword) {
+      setError('Passwords do not match');
+      setIsLoading(false);
+      return;
+    }
 
-              {/* Remember Me & Forgot Password */}
-              <div className="flex items-center justify-between">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4 border rounded focus:ring-2 focus:ring-primary dark:focus:ring-dark-primary accent-primary dark:accent-dark-primary"
-                    disabled={isLoading}
-                  />
-                  <span className="ml-2 text-sm text-text/80 dark:text-dark-text/80">Remember me</span>
-                </label>
-                <a href="#" className="text-sm hover:opacity-80 transition-opacity duration-200 text-secondary dark:text-dark-secondary">
-                  Forgot Password?
-                </a>
-              </div>
+    if (signupData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setIsLoading(false);
+      return;
+    }
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-primary dark:bg-dark-primary text-background dark:text-dark-background"
-              >
-                {isLoading ? 'Logging In...' : 'Login In'}
-              </button>
-            </form>
+    try {
+      const response = await fetch('https://aseam.acm.org/LMS/roadmaps/auth.php/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          rollno: signupData.rollno,
+          name: signupData.name,
+          email: signupData.email,
+          password: signupData.password,
+          confirmPassword: signupData.confirmPassword
+        }),
+      });
 
-            <div className="mt-8 text-center">
-              <p className="text-sm text-text/70 dark:text-dark-text/70">
-                Don't have an account?{' '}
-                <button
-                  onClick={() => setShowSignupModal(true)}
-                  className="font-semibold hover:opacity-80 transition-opacity duration-200 text-primary dark:text-dark-primary"
-                >
-                  Sign Up
-                </button>
-              </p>
-            </div>
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccessMessage('Account created successfully! You can now login.');
+        setSignupData({
+          rollno: '',
+          name: '',
+          email: '',
+          password: '',
+          confirmPassword: ''
+        });
+        setTimeout(() => {
+          setFormType('login');
+          setSuccessMessage('');
+        }, 2000);
+      } else {
+        setError(data.error || 'Signup failed');
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      setError('Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleForgotSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccessMessage('');
+    setIsLoading(true);
+
+    if (!forgotData.email) {
+      setError('Email is required');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('https://aseam.acm.org/LMS/roadmaps/auth.php/forgot_password.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: forgotData.email
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccessMessage('Password reset link has been sent to your email.');
+        setForgotData({ email: '' });
+      } else {
+        setError(data.error || 'Failed to send reset link');
+      }
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      setError('Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleResetSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccessMessage('');
+    setIsLoading(true);
+
+    // Basic validation
+    if (!newPassword || !confirmNewPassword) {
+      setError('All fields are required');
+      setIsLoading(false);
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      setError('Passwords do not match');
+      setIsLoading(false);
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('https://aseam.acm.org/LMS/roadmaps/auth.php/reset_password.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token: resetToken,
+          password: newPassword,
+          confirmPassword: confirmNewPassword
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccessMessage('Password reset successful! You can now login with your new password.');
+        setNewPassword('');
+        setConfirmNewPassword('');
+        setTimeout(() => {
+          setFormType('login');
+          setSuccessMessage('');
+        }, 2000);
+      } else {
+        setError(data.error || 'Password reset failed');
+      }
+    } catch (error) {
+      console.error('Reset password error:', error);
+      setError('Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const renderForm = () => {
+    if (formType === 'login') {
+      return (
+        <div>
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold mb-3 text-text dark:text-dark-text">
+              Hey there!, <br></br> welcome back to ACM recruitment portal
+            </h1>
           </div>
+          <form onSubmit={handleLoginSubmit} className="space-y-6">
+            {/* Roll Number Input */}
+            <div>
+              <input
+                type="text"
+                value={loginData.rollno}
+                onChange={(e) => setLoginData({ ...loginData, rollno: e.target.value })}
+                className="w-full px-4 py-3 border border-secondary/50 dark:border-dark-secondary/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:focus:ring-dark-primary/50 focus:border-transparent transition-all duration-200 bg-background dark:bg-dark-background text-text dark:text-dark-text placeholder-text/50 dark:placeholder-dark-text/50"
+                placeholder="12345"
+                disabled={isLoading}
+              />
+            </div>
+
+            {/* Password Input */}
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={loginData.password}
+                onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                className="w-full px-4 py-3 border border-secondary/50 dark:border-dark-secondary/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:focus:ring-dark-primary/50 focus:border-transparent transition-all duration-200 bg-background dark:bg-dark-background text-text dark:text-dark-text placeholder-text/50 dark:placeholder-dark-text/50"
+                placeholder="••••••••••••"
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-80 transition-opacity duration-200 text-secondary dark:text-dark-secondary"
+                disabled={isLoading}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
+
+            {/* Remember Me & Forgot Password */}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={loginData.rememberMe}
+                  onChange={(e) => setLoginData({ ...loginData, rememberMe: e.target.checked })}
+                  className="w-4 h-4 border rounded focus:ring-2 focus:ring-primary dark:focus:ring-dark-primary accent-primary dark:accent-dark-primary"
+                  disabled={isLoading}
+                />
+                <span className="ml-2 text-sm text-text/80 dark:text-dark-text/80">Remember me</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => setFormType('forgot')}
+                className="text-sm hover:opacity-80 transition-opacity duration-200 text-secondary dark:text-dark-secondary"
+              >
+                Forgot Password?
+              </button>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-primary dark:bg-dark-primary text-background dark:text-dark-background"
+            >
+              {isLoading ? 'Logging In...' : 'Login'}
+            </button>
+          </form>
+
+          <div className="mt-8 text-center">
+            <p className="text-sm text-text/70 dark:text-dark-text/70">
+              Don't have an account?{' '}
+              <button
+                onClick={() => setFormType('signup')}
+                className="font-semibold hover:opacity-80 transition-opacity duration-200 text-primary dark:text-dark-primary"
+              >
+                Sign Up
+              </button>
+            </p>
+          </div>
+        </div>
+      );
+    } else if (formType === 'signup') {
+      return (
+        <div>
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold mb-3 text-text dark:text-dark-text">
+              Join the ACM family
+            </h1>
+            <p className="text-text/70 dark:text-dark-text/70">Create your account to get started</p>
+          </div>
+          <form onSubmit={handleSignupSubmit} className="space-y-6">
+            {/* Roll Number Input */}
+            <div>
+              <input
+                type="text"
+                value={signupData.rollno}
+                onChange={(e) => setSignupData({ ...signupData, rollno: e.target.value })}
+                className="w-full px-4 py-3 border border-secondary/50 dark:border-dark-secondary/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:focus:ring-dark-primary/50 focus:border-transparent transition-all duration-200 bg-background dark:bg-dark-background text-text dark:text-dark-text placeholder-text/50 dark:placeholder-dark-text/50"
+                placeholder="Roll Number (e.g., 12345)"
+                disabled={isLoading}
+              />
+            </div>
+
+            {/* Name Input */}
+            <div>
+              <input
+                type="text"
+                value={signupData.name}
+                onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
+                className="w-full px-4 py-3 border border-secondary/50 dark:border-dark-secondary/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:focus:ring-dark-primary/50 focus:border-transparent transition-all duration-200 bg-background dark:bg-dark-background text-text dark:text-dark-text placeholder-text/50 dark:placeholder-dark-text/50"
+                placeholder="Full Name"
+                disabled={isLoading}
+              />
+            </div>
+
+            {/* Email Input */}
+            <div>
+              <input
+                type="email"
+                value={signupData.email}
+                onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
+                className="w-full px-4 py-3 border border-secondary/50 dark:border-dark-secondary/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:focus:ring-dark-primary/50 focus:border-transparent transition-all duration-200 bg-background dark:bg-dark-background text-text dark:text-dark-text placeholder-text/50 dark:placeholder-dark-text/50"
+                placeholder="Email Address"
+                disabled={isLoading}
+              />
+            </div>
+
+            {/* Password Input */}
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={signupData.password}
+                onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                className="w-full px-4 py-3 border border-secondary/50 dark:border-dark-secondary/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:focus:ring-dark-primary/50 focus:border-transparent transition-all duration-200 bg-background dark:bg-dark-background text-text dark:text-dark-text placeholder-text/50 dark:placeholder-dark-text/50"
+                placeholder="Password"
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-80 transition-opacity duration-200 text-secondary dark:text-dark-secondary"
+                disabled={isLoading}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
+
+            {/* Confirm Password Input */}
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={signupData.confirmPassword}
+                onChange={(e) => setSignupData({ ...signupData, confirmPassword: e.target.value })}
+                className="w-full px-4 py-3 border border-secondary/50 dark:border-dark-secondary/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:focus:ring-dark-primary/50 focus:border-transparent transition-all duration-200 bg-background dark:bg-dark-background text-text dark:text-dark-text placeholder-text/50 dark:placeholder-dark-text/50"
+                placeholder="Confirm Password"
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-80 transition-opacity duration-200 text-secondary dark:text-dark-secondary"
+                disabled={isLoading}
+              >
+                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-primary dark:bg-dark-primary text-background dark:text-dark-background"
+            >
+              {isLoading ? 'Creating Account...' : 'Sign Up'}
+            </button>
+          </form>
+
+          <div className="mt-8 text-center">
+            <p className="text-sm text-text/70 dark:text-dark-text/70">
+              Already have an account?{' '}
+              <button
+                onClick={() => setFormType('login')}
+                className="font-semibold hover:opacity-80 transition-opacity duration-200 text-primary dark:text-dark-primary"
+              >
+                Login
+              </button>
+            </p>
+          </div>
+        </div>
+      );
+    } else if (formType === 'reset') {
+      return (
+        <div>
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold mb-3 text-text dark:text-dark-text">
+              Set your new password
+            </h1>
+            <p className="text-text/70 dark:text-dark-text/70">Enter your new password below</p>
+          </div>
+          <form onSubmit={handleResetSubmit} className="space-y-6">
+            {/* New Password Input */}
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full px-4 py-3 border border-secondary/50 dark:border-dark-secondary/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:focus:ring-dark-primary/50 focus:border-transparent transition-all duration-200 bg-background dark:bg-dark-background text-text dark:text-dark-text placeholder-text/50 dark:placeholder-dark-text/50"
+                placeholder="New Password"
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-80 transition-opacity duration-200 text-secondary dark:text-dark-secondary"
+                disabled={isLoading}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
+
+            {/* Confirm New Password Input */}
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                className="w-full px-4 py-3 border border-secondary/50 dark:border-dark-secondary/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:focus:ring-dark-primary/50 focus:border-transparent transition-all duration-200 bg-background dark:bg-dark-background text-text dark:text-dark-text placeholder-text/50 dark:placeholder-dark-text/50"
+                placeholder="Confirm New Password"
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-80 transition-opacity duration-200 text-secondary dark:text-dark-secondary"
+                disabled={isLoading}
+              >
+                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-primary dark:bg-dark-primary text-background dark:text-dark-background"
+            >
+              {isLoading ? 'Resetting Password...' : 'Reset Password'}
+            </button>
+          </form>
+
+          <div className="mt-8 text-center">
+            <p className="text-sm text-text/70 dark:text-dark-text/70">
+              Remember your password?{' '}
+              <button
+                onClick={() => setFormType('login')}
+                className="font-semibold hover:opacity-80 transition-opacity duration-200 text-primary dark:text-dark-primary"
+              >
+                Login
+              </button>
+            </p>
+          </div>
+        </div>
+      );
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex p-2 bg-background dark:bg-dark-background transition-colors duration-300">
+      {/* Left Side - Form */}
+      <div className="flex-1 flex flex-col justify-center pr-8">
+        <div className="w-full max-w-md mx-auto">
+          {/* Error/Success Messages */}
+          {error && (
+            <div className="mb-6 p-3 rounded-lg border bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800/50 text-red-700 dark:text-red-300">
+              {error}
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="mb-6 p-3 rounded-lg border bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800/50 text-green-700 dark:text-green-300">
+              {successMessage}
+            </div>
+          )}
+
+          {renderForm()}
 
           {/* Alumni Section */}
           <div className="mt-12 w-full max-w-md mx-auto">
@@ -335,76 +623,120 @@ const Login = ({ onLogin }) => {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Right Side - Enhanced content */}
-        <div className="flex-1 relative overflow-hidden ml-8 rounded-3xl shadow-2xl bg-gradient-to-r from-primary dark:from-dark-primary to-secondary dark:to-dark-secondary">
-
-          {/* Top Section */}
-          <div className="h-1/2 flex flex-col">
-            <div className="p-8 text-center">
-              <h2 className="text-3xl font-bold mb-3 text-background dark:text-dark-background">
-                Fueling Curiosity Igniting Ideas
-              </h2>
-              <p className="text-lg font-medium mb-2 text-secondary dark:text-dark-secondary">
-                Join us Now!
-              </p>
-              <p className="text-sm opacity-90 text-background dark:text-dark-background">
-                Welcome to the realm of ACM, where the boundaries of technology are pushed to the limits. Here, every idea has the potential to bring about change. Together, we are not just adapting to the future; we are actively shaping it, as a FAMILY.
-              </p>
-            </div>
-            <div className="flex-1">
-              <ImageMarquee images={topImages} speed="medium" />
-            </div>
+      {/* Right Side - Enhanced content */}
+      <div className="flex-1 relative overflow-hidden ml-8 rounded-3xl shadow-2xl bg-gradient-to-r from-purple-700 to-gray-900 dark:from-purple-900 dark:to-black">
+        {/* Top Section - Moderately increased height for photos */}
+        <div className="h-[50%] flex flex-col">
+          <div className="p-6 text-center">
+            <img src={Logo} alt="Logo" className="w-52 h-auto mx-auto" />
+            <h2 className="text-2xl font-bold mb-2 text-background dark:text-dark-background">
+              ACM Amritapuri
+            </h2>
+            <p className="text-base font-medium text-background dark:text-dark-background">
+              Learn, Build, Belong
+            </p>
           </div>
-
-          {/* Middle Section - Additional Content */}
-          <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 z-10">
-            <div className="bg-gradient-to-r from-purple-900/80 to-pink-900/80 backdrop-blur-sm mx-8 rounded-2xl p-6 text-center">
-              <h3 className="text-xl font-bold mb-2 text-background dark:text-dark-background">
-                Join 50+ Developers
-              </h3>
-              <p className="text-sm opacity-90 text-background dark:text-dark-background">
-                Build your network • Learn new skills • Create impact
-              </p>
-            </div>
+          <div className="flex-1">
+            <ImageMarquee images={topImages} speed="medium" />
           </div>
+        </div>
+        {/* Middle Section - Centered overlay */}
+        <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 z-10">
+          <div className="bg-gradient-to-r from-purple-900/80 to-purple-900/80 backdrop-blur-sm mx-8 rounded-2xl p-4 text-center">
+            <h3 className="text-xl font-bold mb-2 text-background dark:text-dark-background">
+              Welcome to the ACM family
+            </h3>
 
-          {/* Bottom Section */}
-          <div className="h-1/2 flex flex-col justify-end">
-            <div className="p-8 text-center">
-              <img src={Logo} alt="Logo" className="w-60 h-auto mx-auto mb-12" />
+          </div>
+        </div>
 
-              <h3 className="text-2xl font-bold mb-2 text-background dark:text-dark-background">
+
+        {/* Bottom Section - Better aligned */}
+        <div className="h-[45%] flex flex-col">
+          {/* Spacer to push content down from middle overlay */}
+          <div className="flex-1"></div>
+
+          {/* About and Discord Section */}
+          <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12 space-y-6 sm:space-y-8 lg:space-y-12 max-w-4xl mx-auto">
+            <div className="text-center">
+              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2 sm:mb-3 lg:mb-4 text-background dark:text-dark-background">
                 About us
               </h3>
-              <p className="text-base text-secondary dark:text-dark-secondary">
-                We are a group of computer science enthusiasts promoting self-education and group-based learning through Student Interest Groups (SIGs) focused on topics such as AI, Cybersecurity, Game Dev, App and Web Development, Blockchain Dev and more.
+              <p className="text-xs sm:text-sm lg:text-base text-background dark:text-dark-background leading-relaxed max-w-3xl mx-auto px-2 sm:px-0">
+                A community of tech enthusiasts exploring AI, Cybersecurity, Web & App Development, Blockchain, Game Development, and more — learn, create, and grow with us!
               </p>
-              <div className="flex justify-center space-x-4 mt-4">
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 rounded-full bg-secondary dark:bg-dark-secondary"></div>
-                  <span className="text-sm text-background/80 dark:text-dark-background/80">Events</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 rounded-full bg-secondary dark:bg-dark-secondary"></div>
-                  <span className="text-sm text-background/80 dark:text-dark-background/80">Workshops</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 rounded-full bg-secondary dark:bg-dark-secondary"></div>
-                  <span className="text-sm text-background/80 dark:text-dark-background/80">Community</span>
-                </div>
+            </div>
+
+            {/* Discord Section */}
+            <div className="text-center">
+              <p className="text-xs sm:text-sm lg:text-base text-background dark:text-dark-background leading-relaxed max-w-2xl mx-auto px-2 sm:px-0">
+                To get the latest updates on the recruitment process and have your questions answered, join our Discord server.
+              </p>
+            </div>
+          </div>
+
+          {/* Social Media Section - Fixed at bottom */}
+          <div className="px-4 sm:px-6 lg:px-8 pb-2 sm:pb-3 lg:pb-4 mt-4 sm:mt-1">
+            <div className="text-center max-w-md mx-auto">
+              <h4 className="text-base sm:text-lg lg:text-xl font-semibold mb-3 sm:mb-4 lg:mb-6 text-background dark:text-dark-background">
+                Connect with us
+              </h4>
+              <div className="flex justify-center items-center space-x-4 sm:space-x-6 lg:space-x-8">
+                <a
+                  href="#"
+                  className="group flex flex-col items-center space-y-1 hover:scale-110 transition-all duration-300"
+                >
+                  <div className="p-1.5 sm:p-2 lg:p-2.5 rounded-full bg-background/20 dark:bg-dark-background/20 group-hover:bg-background/30 dark:group-hover:bg-dark-background/30 transition-all duration-300">
+                    <Instagram className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-background dark:text-dark-background" />
+                  </div>
+                  <span className="text-xs sm:text-xs lg:text-sm text-background/80 dark:text-dark-background/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:block">
+                    Instagram
+                  </span>
+                </a>
+                <a
+                  href="#"
+                  className="group flex flex-col items-center space-y-1 hover:scale-110 transition-all duration-300"
+                >
+                  <div className="p-1.5 sm:p-2 lg:p-2.5 rounded-full bg-background/20 dark:bg-dark-background/20 group-hover:bg-background/30 dark:group-hover:bg-dark-background/30 transition-all duration-300">
+                    <Linkedin className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-background dark:text-dark-background" />
+                  </div>
+                  <span className="text-xs sm:text-xs lg:text-sm text-background/80 dark:text-dark-background/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:block">
+                    LinkedIn
+                  </span>
+                </a>
+
+                <a
+                  href="#"
+                  className="group flex flex-col items-center space-y-1 hover:scale-110 transition-all duration-300"
+                >
+                  <div className="p-1.5 sm:p-2 lg:p-2.5 rounded-full bg-background/20 dark:bg-dark-background/20 group-hover:bg-background/30 dark:group-hover:bg-dark-background/30 transition-all duration-300">
+                    <Github className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-background dark:text-dark-background" />
+                  </div>
+                  <span className="text-xs sm:text-xs lg:text-sm text-background/80 dark:text-dark-background/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:block">
+                    GitHub
+                  </span>
+                </a>
+
+                <a
+                  href="#"
+                  className="group flex flex-col items-center space-y-1 hover:scale-110 transition-all duration-300"
+                >
+                  <div className="p-1.5 sm:p-2 lg:p-2.5 rounded-full bg-background/20 dark:bg-dark-background/20 group-hover:bg-background/30 dark:group-hover:bg-dark-background/30 transition-all duration-300">
+                    <Globe className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-background dark:text-dark-background" />
+                  </div>
+                  <span className="text-xs sm:text-xs lg:text-sm text-background/80 dark:text-dark-background/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:block">
+                    Website
+                  </span>
+                </a>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Signup Modal */}
-      <SignupModal
-        isOpen={showSignupModal}
-        onClose={() => setShowSignupModal(false)}
-      />
-    </>
+      </div>
+    </div>
   );
 };
 

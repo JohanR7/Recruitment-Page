@@ -9,13 +9,13 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Challenges from './components/Challenges';
 import Leaderboard from './components/Leaderboard';
-import Notifications from './components/Notifications';
-import Profile from './components/Profile';
+// import Notifications from './components/Notifications';
+// import Profile from './components/Profile';
 import { notifications } from './data/mockData';
 
 function AppRoutes() {
   const { auth, logout } = useAuth();
-  const unreadNotifications = notifications.filter(n => !n.read).length;
+  // const unreadNotifications = notifications.filter(n => !n.read).length;
 
   return (
     <Routes>
@@ -32,7 +32,7 @@ function AppRoutes() {
           auth ? (
             <AppLayout
               onLogout={logout}
-              unreadNotifications={unreadNotifications}
+              // unreadNotifications={unreadNotifications}
             />
           ) : (
             <Navigate to="/login" />
@@ -46,8 +46,8 @@ function AppRoutes() {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="challenges" element={<Challenges />} />
         <Route path="leaderboard" element={<Leaderboard />} />
-        <Route path="notifications" element={<Notifications />} />
-        <Route path="profile" element={<Profile />} />
+        {/* <Route path="notifications" element={<Notifications />} /> */}
+        {/* <Route path="profile" element={<Profile />} /> */}
       </Route>
 
       {/* Catch-all route */}

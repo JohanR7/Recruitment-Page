@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Trophy, Medal, Award, Star, TrendingUp, Crown } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext'; 
+import { useAuth } from '../contexts/AuthContext';
 
 const LoadingSpinner = () => (
   <div className="flex justify-center items-center py-20">
@@ -17,7 +17,7 @@ const PlaceholderAvatar = ({ name, rank }) => {
     return 'bg-gray-200';
   };
   const initial = name ? name.charAt(0).toUpperCase() : '?';
-  
+
   return (
     <div className={`w-full h-full rounded-full flex items-center justify-center ${getRankColor()}`}>
       <span className="text-white text-3xl font-bold">{initial}</span>
@@ -28,13 +28,13 @@ const PlaceholderAvatar = ({ name, rank }) => {
 
 
 const Leaderboard = () => {
-  const { auth } = useAuth(); 
+  const { auth } = useAuth();
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  
+
   const API_BASE = 'https://aseam.acm.org/LMS/roadmaps/roadmap1.php';
 
   // Get current user info from auth context
@@ -48,7 +48,7 @@ const Leaderboard = () => {
   console.log('🆔 Current User ID:', currentUserId);
   console.log('📝 Current User Name:', currentUserName);
 
-  
+
 
 
   const handleRefresh = () => {
@@ -57,23 +57,23 @@ const Leaderboard = () => {
   const apiCall = useCallback(async (url, options = {}) => {
     setLoading(true);
     setError('');
-    
-    const requestOptions = { 
+
+    const requestOptions = {
       ...options,
       headers: {
         ...options.headers,
         ...(auth?.token && { 'Authorization': `Bearer ${auth.token}` }),
       }
     };
-    
+
     if (!(options.body instanceof FormData)) {
       requestOptions.headers['Content-Type'] = 'application/json';
     }
-    
+
     try {
       console.log('🌐 Making API request to:', url);
       console.log('🔑 Using auth token:', auth?.token ? 'Present' : 'Not present');
-      
+
       const response = await fetch(url, requestOptions);
       if (!response.ok) {
         const errData = await response.json();
@@ -94,14 +94,14 @@ const Leaderboard = () => {
     try {
       console.log(`🚀 Fetching leaderboard - Page: ${currentPage}`);
       const data = await apiCall(`${API_BASE}/leaderboard?page=${currentPage}&limit=10`);
-      
+
       console.log('📊 Leaderboard API Response:', JSON.stringify(data, null, 2));
-      
+
       if (data.success) {
         console.log('✅ Leaderboard fetch successful');
         console.log('📋 Leaderboard data:', data.leaderboard);
         console.log('📄 Pagination info:', data.pagination);
-        
+
         setLeaderboardData(data.leaderboard);
         setPage(data.pagination.current_page);
         setTotalPages(data.pagination.total_pages);
@@ -130,11 +130,11 @@ const Leaderboard = () => {
   // Helper function to check if a user is the current user
   const isCurrentUser = (user) => {
     if (!currentUserId) return false;
-    
+
     // Check multiple possible ID fields
     return user.student_id?.toString() === currentUserId?.toString() ||
-           user.id?.toString() === currentUserId?.toString() ||
-           user.user_id?.toString() === currentUserId?.toString();
+      user.id?.toString() === currentUserId?.toString() ||
+      user.user_id?.toString() === currentUserId?.toString();
   };
 
   const getRankIcon = (rank) => {
@@ -143,7 +143,7 @@ const Leaderboard = () => {
     if (rank === 3) return <Award className="w-6 h-6 text-red-600" />;
     return <span className="w-6 h-6 flex items-center justify-center text-gray-500 font-bold">#{rank}</span>;
   };
-  
+
   const getRankBadge = (rank) => {
     if (rank === 1) return 'bg-gradient-to-r from-purple-700 to-purple-900 text-white';
     if (rank === 2) return 'bg-gradient-to-r from-pink-500 to-pink-700 text-white';
@@ -164,14 +164,14 @@ const Leaderboard = () => {
   console.log('Total pages:', totalPages);
   console.log('Current user in leaderboard:', currentUserInLeaderboard);
 
-return (
+  return (
     <div className="p-6 bg-background dark:bg-dark-background text-text dark:text-dark-text transition-colors duration-300">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-text dark:text-dark-text mb-2">Hall of Fame</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            {currentUserName ? `Welcome back, ${currentUserName}! ` : ''}
-            See how you rank against other recruits
+            {currentUserName ? `Sup, ${currentUserName}! ` : ''}
+            See how you rank against other candidates. 
           </p>
           {currentUserInLeaderboard && (
             <div className="mt-2 text-sm text-primary dark:text-dark-primary font-medium">
@@ -275,6 +275,9 @@ return (
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent 
                                     transform -skew-x-12 -translate-x-full group-hover:translate-x-full 
                                     transition-transform duration-1000 delay-200"></div>
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <span className="text-white font-bold text-lg tracking-wider">2nd</span>
+                    </div>
                   </div>
                 </div>
 
@@ -319,6 +322,9 @@ return (
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent 
                                     transform -skew-x-12 -translate-x-full group-hover:translate-x-full 
                                     transition-transform duration-1000 delay-300"></div>
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <span className="text-white font-bold text-xl tracking-wider">1st</span>
+                    </div>
                   </div>
                 </div>
 
@@ -361,19 +367,22 @@ return (
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent 
                                     transform -skew-x-12 -translate-x-full group-hover:translate-x-full 
                                     transition-transform duration-1000 delay-200"></div>
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <span className="text-white font-bold text-xl tracking-wider">3rd</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           )}
-          
+
           {/* Full Leaderboard List */}
           <div className="bg-white/60 dark:bg-dark-background/60 backdrop-blur-md border border-gray-200/80 dark:border-gray-700/80 rounded-2xl overflow-hidden">
             <div className="divide-y divide-gray-200/80 dark:divide-gray-700/80">
               {leaderboardData.map((user) => {
                 const isCurrent = isCurrentUser(user);
                 console.log('👤 Rendering player:', user, 'Is current user:', isCurrent);
-                
+
                 return (
                   <div key={user.student_id} className={`p-4 md:p-6 hover:bg-primary/5 dark:hover:bg-dark-primary/5 transition-all duration-200 ${isCurrent ? 'bg-primary/10 dark:bg-dark-primary/10 border-l-4 border-primary dark:border-dark-primary' : ''}`}>
                     <div className="flex items-center gap-4">
@@ -404,27 +413,27 @@ return (
               })}
             </div>
           </div>
-          
+
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex justify-center items-center mt-6 gap-4">
-              <button 
+              <button
                 onClick={() => {
                   console.log('⬅️ Previous page clicked, current page:', page);
                   handlePageChange(page - 1);
-                }} 
-                disabled={page === 1 || loading} 
+                }}
+                disabled={page === 1 || loading}
                 className="px-6 py-2 bg-white dark:bg-dark-background border border-gray-300 dark:border-gray-600 text-text dark:text-dark-text rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
               >
                 Previous
               </button>
               <span className="text-gray-600 dark:text-gray-400 font-medium px-4">Page {page} of {totalPages}</span>
-              <button 
+              <button
                 onClick={() => {
                   console.log('➡️ Next page clicked, current page:', page);
                   handlePageChange(page + 1);
-                }} 
-                disabled={page === totalPages || loading} 
+                }}
+                disabled={page === totalPages || loading}
                 className="px-6 py-2 bg-white dark:bg-dark-background border border-gray-300 dark:border-gray-600 text-text dark:text-dark-text rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
               >
                 Next
